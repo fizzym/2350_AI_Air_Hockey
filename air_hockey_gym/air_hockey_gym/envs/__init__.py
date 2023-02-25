@@ -1,0 +1,1 @@
+from air_hockey_gym.envs.air_hockey_v0 import AirHockeyEnv

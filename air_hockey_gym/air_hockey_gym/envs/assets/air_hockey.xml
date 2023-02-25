@@ -1,0 +1,76 @@
+<robot name="onshape">
+<link name="table">
+<visual>
+<geometry>
+<mesh filename="package:///table.stl"/>
+</geometry>
+<material name="table_material">
+<color rgba="0.498039 0.498039 0.498039 1.0"/>
+</material>
+</visual>
+<collision>
+<geometry>
+<mesh filename="package:///table.stl"/>
+</geometry>
+<material name="table_material">
+<color rgba="0.498039 0.498039 0.498039 1.0"/>
+</material>
+</collision>
+<inertial>
+<origin xyz="-8.99779e-05 2.5604e-05 0.0801566" rpy="0 0 0"/>
+<mass value="171.229" />
+<inertia ixx="25.4004" ixy="0.00280946"  ixz="0.00102404" iyy="77.3189" iyz="-0.000291377" izz="102.173" />
+</inertial>
+</link>
+<link name="puck">
+<visual>
+<origin xyz="-1.20184e-09 1.15564e-09 0.146664" rpy="-3.14159 -7.8795e-09 -1.5708" />
+<geometry>
+<mesh filename="package:///puck.stl"/>
+</geometry>
+<material name="puck_material">
+<color rgba="0.917647 0.917647 0.917647 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="-1.20184e-09 1.15564e-09 0.146664" rpy="-3.14159 -7.8795e-09 -1.5708" />
+<geometry>
+<mesh filename="package:///puck.stl"/>
+</geometry>
+<material name="puck_material">
+<color rgba="0.917647 0.917647 0.917647 1.0"/>
+</material>
+</collision>
+</link>
+<link name="mallet">
+<visual>
+<origin xyz="-0.640618 0.18229 0.151664" rpy="-3.14159 8.19447e-09 3.14159" />
+<geometry>
+<mesh filename="package:///mallet.stl"/>
+</geometry>
+<material name="mallet_material">
+<color rgba="0.231373 0.380392 0.705882 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="-0.640618 0.18229 0.151664" rpy="-3.14159 8.19447e-09 3.14159" />
+<geometry>
+<mesh filename="package:///mallet.stl"/>
+</geometry>
+<material name="mallet_material">
+<color rgba="0.231373 0.380392 0.705882 1.0"/>
+</material>
+</collision>
+</link>
+<joint name="planar_puck" type="planar">
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+    <parent link="table"/>
+    <child link="puck"/>
+</joint>
+<joint name="planar_mallet" type="planar">
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+    <parent link="table"/>
+    <child link="mallet"/>
+</joint>
+
+</robot>

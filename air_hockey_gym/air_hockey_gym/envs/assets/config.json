@@ -1,0 +1,6 @@
+{
+    "documentId": "49a860d0e1163473526ba075",
+    "assemblyName": "table",
+    "outputFormat": "urdf",
+    "addDummyBaseLink": true
+}
