@@ -6,7 +6,8 @@ env = AirHockeyEnv(render_mode="human")
 
 for i in range(0,1000):
 	env.render()
-	env.step([])
+	#env.step([])
+	time.sleep(0.01)
 
 
 
