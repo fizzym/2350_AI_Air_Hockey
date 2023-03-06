@@ -20,7 +20,10 @@ class AirHockeyEnv(MujocoEnv):
             "rgb_array",
             "depth_array"
         ],
-        "render_fps": 500,
+
+        #Should be equal to frame_skip / timestep. timestep defined in xml. 
+        #frame_skip defined in __init__
+        "render_fps": 25,
     }
 
     def __init__(self, **kwargs):
@@ -33,8 +36,8 @@ class AirHockeyEnv(MujocoEnv):
         MujocoEnv.__init__(
             self,
             self.asset_path + "table.xml",
-            #TODO check if I need to change frame skip
-            2,
+            #Defines how many time steps should be executed between each step function call 
+            frame_skip=40,
             observation_space=observation_space,
             #TODO figure out how to define camera config
             #default_camera_config=DEFAULT_CAMERA_CONFIG,
