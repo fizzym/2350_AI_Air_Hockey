@@ -2,7 +2,7 @@
 <link name="table">
 <visual>
 <geometry>
-<mesh filename="package:///table.stl"/>
+<mesh filename="table.stl"/>
 </geometry>
 <material name="table_material">
 <color rgba="0.498039 0.498039 0.498039 1.0"/>
@@ -10,7 +10,7 @@
 </visual>
 <collision>
 <geometry>
-<mesh filename="package:///table.stl"/>
+<mesh filename="table.stl"/>
 </geometry>
 <material name="table_material">
 <color rgba="0.498039 0.498039 0.498039 1.0"/>
@@ -26,7 +26,7 @@
 <visual>
 <origin xyz="-1.20184e-09 1.15564e-09 0.146664" rpy="-3.14159 -7.8795e-09 -1.5708" />
 <geometry>
-<mesh filename="package:///puck.stl"/>
+<mesh filename="puck.stl"/>
 </geometry>
 <material name="puck_material">
 <color rgba="0.917647 0.917647 0.917647 1.0"/>
@@ -35,7 +35,7 @@
 <collision>
 <origin xyz="-1.20184e-09 1.15564e-09 0.146664" rpy="-3.14159 -7.8795e-09 -1.5708" />
 <geometry>
-<mesh filename="package:///puck.stl"/>
+<mesh filename="puck.stl"/>
 </geometry>
 <material name="puck_material">
 <color rgba="0.917647 0.917647 0.917647 1.0"/>
@@ -46,7 +46,7 @@
 <visual>
 <origin xyz="-0.640618 0.18229 0.151664" rpy="-3.14159 8.19447e-09 3.14159" />
 <geometry>
-<mesh filename="package:///mallet.stl"/>
+<mesh filename="mallet.stl"/>
 </geometry>
 <material name="mallet_material">
 <color rgba="0.231373 0.380392 0.705882 1.0"/>
@@ -55,7 +55,7 @@
 <collision>
 <origin xyz="-0.640618 0.18229 0.151664" rpy="-3.14159 8.19447e-09 3.14159" />
 <geometry>
-<mesh filename="package:///mallet.stl"/>
+<mesh filename="mallet.stl"/>
 </geometry>
 <material name="mallet_material">
 <color rgba="0.231373 0.380392 0.705882 1.0"/>
