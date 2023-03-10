@@ -121,20 +121,35 @@ class AirHockeyEnv(MujocoEnv):
         mujoco.mj_forward(self.model, self.data)
       
 
-    #@param a - action
+    #@param a - action to be undertaken - shape (4,)
+    #See documentation above
     def step(self, a):
+        
+        #Copy action so that we do not change original list 
+        a_copy = list(a)
+      
+        a_copy[2] *= -1
+        a_copy[3] *= -1
+
+        self.do_simulation(a_copy, self.frame_skip)
+        ob = self._get_obs()
+
         #TODO define reward function 
         reward = 1.0
-        self.do_simulation(a, self.frame_skip)
-        ob = self._get_obs()
-        #TODO define terminated condition
-        terminated = False
+
+        #TODO check this is the correct bound on puck position
+        #Puck x position is first defined joint and is 0 at center of table
+        terminated = np.abs(self.data.qpos[0]) > 1
+
         #TODO determine if truncated condition is needed
         truncated = False
+
         #TODO define debug info or other useful metrics in info
         info = {}
+
         if self.render_mode == "human":
             self.render()
+
         return ob, reward, terminated, truncated, info
 
     
@@ -168,5 +183,7 @@ class AirHockeyEnv(MujocoEnv):
         m2_obs = -1 * np.stack([cart_p, cart_m2, cart_m1])
 
         return {self.mal1_name: m1_obs, self.mal2_name : m2_obs}
+
+
 
 

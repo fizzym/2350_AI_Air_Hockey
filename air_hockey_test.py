@@ -25,9 +25,11 @@ assert np.allclose(expect_start["mal1"], obs["mal1"])
 assert np.allclose(expect_start["mal2"], obs["mal2"])
 
 #Test termination in mallet 2 goal
-action = [5,0, 0, 1]
+action = [5, 0, 0, 1]
 terminated_correctly = False
 for i in range(50):
+
+	#copy list so it is not modified within function
 	obs, rew, term, _, _ = env.step(action)
 	env.render()
 	if(term):
@@ -36,8 +38,10 @@ for i in range(50):
 
 assert terminated_correctly
 
-obs = env.reset()
-assert expect_start == obs
+obs, _ = env.reset()
+
+assert np.allclose(expect_start["mal1"], obs["mal1"])
+assert np.allclose(expect_start["mal2"], obs["mal2"])
 
 #Test termination in mallet 1 goal
 action = [0,1, 5, 0]
@@ -51,8 +55,10 @@ for i in range(50):
 
 assert terminated_correctly
 
-obs = env.reset()
-assert expect_start == obs
+obs, _ = env.reset()
+
+assert np.allclose(expect_start["mal1"], obs["mal1"])
+assert np.allclose(expect_start["mal2"], obs["mal2"])
 
 for i in range(0,500):
 	
