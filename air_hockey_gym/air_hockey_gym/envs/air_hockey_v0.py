@@ -12,10 +12,9 @@ DEFAULT_CAMERA_CONFIG = {
 
 #TODO see if I need to add EzPickle
 class AirHockeyEnv(MujocoEnv):
+    """
 
-	"""
-
-	### Mallet Definition
+    ### Mallet Definition
 	Mallet 1 - Mallet that plays in -x direction from table coordinate frame.
 	The mallet on the left side of the table when looking from default camera angle. 
 	
@@ -70,6 +69,7 @@ class AirHockeyEnv(MujocoEnv):
 	
 
 	"""
+
     metadata = {
         #All 3 render modes required for MujocoEnv
         "render_modes": [
@@ -100,7 +100,7 @@ class AirHockeyEnv(MujocoEnv):
 
         MujocoEnv.__init__(
             self,
-            self.asset_path + "table.xml",
+            self.asset_path + "table_2_mallets.xml",
             #Defines how many time steps should be executed between each step function call 
             frame_skip=40,
             observation_space=observation_space,
