@@ -80,7 +80,7 @@
             </body>
         </body>
 
-        <body name="base3" pos="0.25 0 0.015" euler="0 0 180">
+        <body name="base3" pos="0.25 0 0.015">
             <joint name="mallet2_x" type="slide" axis="1 0 0" damping="0.01" limited="false"/>
             <joint name="mallet2_y" type="slide" axis="0 1 0" damping="0.01" limited="false"/>
             <joint name="mallet2_yaw" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>

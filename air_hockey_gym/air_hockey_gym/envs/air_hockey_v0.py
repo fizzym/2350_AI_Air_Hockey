@@ -148,7 +148,25 @@ class AirHockeyEnv(MujocoEnv):
 
     def _get_obs(self):
 
-        #TODO access observation from self.data
-        array1 = np.ones((3,4), np.float64)
-        array2 = np.zeros((3,4), np.float64)
-        return {self.mal1_name: array1, self.mal2_name : array2}
+        #Calculate current Cartesian coordinates
+        mujoco.mj_kinematics(self.model,self.data)
+
+        #Note: All frames have same orientation, but different origins. Therefore qvel values
+        #are still in cartesian coords
+
+        #Puck's DOF are defined 1st and 2nd in the XML
+        cart_p = np.concatenate((self.data.geom("puck").xpos[:2], self.data.qvel[0:2]))
+    	#Mallet 1's DOF are defined 4th and 5th in the XML
+        cart_m1 = np.concatenate((self.data.geom("mallet1").xpos[:2], self.data.qvel[3:5]))
+        #Mallet 2's DOF are defined 7th and 8th in the XML
+        cart_m2 = np.concatenate((self.data.geom("mallet2").xpos[:2], self.data.qvel[6:8]))
+        
+
+        m1_obs = np.stack([cart_p, cart_m1, cart_m2])
+        #TODO ensure this is correct
+        #Mallet 2 reference frame is 180 rotation of Mallet 1 frame, therefore multiply all values by -1
+        m2_obs = -1 * np.stack([cart_p, cart_m2, cart_m1])
+
+        return {self.mal1_name: m1_obs, self.mal2_name : m2_obs}
+
+
