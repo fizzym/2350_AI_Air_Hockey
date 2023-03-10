@@ -140,8 +140,10 @@ class AirHockeyEnv(MujocoEnv):
     
     def reset_model(self):
         
-        #TODO reset model
-        self.set_state()
+        #Reset all values to default from XML
+        qpos = np.zeros(13,)
+        qvel = np.zeros(13,)
+        self.set_state(qpos, qvel)
         return self._get_obs()
 
     def _get_obs(self):
