@@ -88,8 +88,8 @@ class AirHockeyEnv(MujocoEnv):
     def __init__(self, **kwargs):
 
     	#Name of agents used as keys in dictionaries
-        self.mal1_name = "mal_1"
-        self.mal2_name = "mal_2"
+        self.mal1_name = "mal1"
+        self.mal2_name = "mal2"
 
         #TODO define max speeds and position
         observation_space = Dict({self.mal1_name: Box(low=-np.inf, high=np.inf, shape=(3,4), dtype=np.float64),
