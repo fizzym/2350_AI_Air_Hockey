@@ -29,7 +29,6 @@ action = [5, 0, 0, 1]
 terminated_correctly = False
 for i in range(50):
 
-	#copy list so it is not modified within function
 	obs, rew, term, _, _ = env.step(action)
 	env.render()
 	if(term):
@@ -46,7 +45,9 @@ assert np.allclose(expect_start["mal2"], obs["mal2"])
 #Test termination in mallet 1 goal
 action = [0,1, 5, 0]
 terminated_correctly = False
+
 for i in range(50):
+	
 	obs, rew, term, _, _ = env.step(action)
 	env.render()
 	if(term):

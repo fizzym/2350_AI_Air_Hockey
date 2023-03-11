@@ -91,9 +91,10 @@ class AirHockeyEnv(MujocoEnv):
         self.mal1_name = "mal1"
         self.mal2_name = "mal2"
 
-        #TODO define max speeds and position
-        observation_space = Dict({self.mal1_name: Box(low=-np.inf, high=np.inf, shape=(3,4), dtype=np.float64),
-        self.mal2_name: Box(low=-np.inf, high=np.inf, shape=(3,4), dtype=np.float64)})
+        #Note: Other MuJoCo Envs do not seem to define limits to observation space
+        #The limits don't seem to be checked/enforced anywhere so I have also not included them
+        box_obs = Box(low=-np.inf, high=np.inf, shape=(3,4), dtype=np.float64)
+        observation_space = Dict({self.mal1_name : box_obs, self.mal2_name : box_obs})
         
         self.asset_path = os.path.join(os.path.dirname(__file__), "assets/")
         print(self.asset_path)
@@ -109,18 +110,6 @@ class AirHockeyEnv(MujocoEnv):
             **kwargs,
         )
 
-    def _initialize_simulation(self):
-
-        self.model = mujoco.MjModel.from_xml_path(self.fullpath)
-        
-        self.model.vis.global_.offwidth = self.width
-        self.model.vis.global_.offheight = self.height
-        self.data = mujoco.MjData(self.model)
-        
-        #Not sure why, but model will not render without calling this
-        mujoco.mj_forward(self.model, self.data)
-      
-
     #@param a - action to be undertaken - shape (4,)
     #See documentation above
     def step(self, a):
@@ -128,6 +117,8 @@ class AirHockeyEnv(MujocoEnv):
         #Copy action so that we do not change original list 
         a_copy = list(a)
       
+        #Acceleration of mallet 2 is in it's reference frame, which is rotated 180 degrees
+        #from the reference frame of the actuators. Rotate back to input to MuJoCo
         a_copy[2] *= -1
         a_copy[3] *= -1
 
@@ -137,7 +128,6 @@ class AirHockeyEnv(MujocoEnv):
         #TODO define reward function 
         reward = 1.0
 
-        #TODO check this is the correct bound on puck position
         #Puck x position is first defined joint and is 0 at center of table
         terminated = np.abs(self.data.qpos[0]) > 1
 
@@ -178,7 +168,7 @@ class AirHockeyEnv(MujocoEnv):
         
 
         m1_obs = np.stack([cart_p, cart_m1, cart_m2])
-        #TODO ensure this is correct
+        
         #Mallet 2 reference frame is 180 rotation of Mallet 1 frame, therefore multiply all values by -1
         m2_obs = -1 * np.stack([cart_p, cart_m2, cart_m1])
 
