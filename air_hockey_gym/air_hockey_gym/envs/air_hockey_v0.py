@@ -79,7 +79,7 @@ class AirHockeyEnv(MujocoEnv):
             "depth_array"
         ],
 
-        #Should be equal to frame_skip / timestep. timestep defined in xml. 
+        #Should be equal to  1/(frame_skip * timestep). timestep defined in xml. 
         #frame_skip defined in __init__
         "render_fps": 25,
     }
@@ -188,13 +188,45 @@ class AirHockeyEnv(MujocoEnv):
  	#@param - obs_1 Current observation of the table environment from mallet 1's perspective
  	#@returns double Reward for mallet 1 based on the current environment state
     def _get_mal_1_rew(self, obs_1):
-    	return self._get_rew_from_obs(obs_1)
+        rew = self._get_rew_from_obs(obs_1)
+        
+        #If magnitude of reward is max, goal was scored therefore no more calculations needed
+        if(np.abs(rew) != self.max_reward):
 
+          #Iterate through collisions and give reward if mallet 1 hits puck
+          #TODO probably good to penalize mallet 1 collisions with anything else   
+          for i in range(self.data.ncon):
+
+                obj_1 = self.model.geom(self.data.contact[i].geom1).name
+                obj_2 = self.model.geom(self.data.contact[i].geom2).name
+                coll_set = {obj_1, obj_2}
+                
+                if "mallet1" in coll_set and "puck" in coll_set:
+                    rew += 0.5 * self.max_reward
+                    break
+        return rew
 
     #@param obs_2 -  Current observation of the table environment from mallet 2's perspective
  	#@returns double - Reward for mallet 2 based on the current environment state
     def _get_mal_2_rew(self, obs_2):
-    	return self._get_rew_from_obs(obs_2)
+        rew = self._get_rew_from_obs(obs_2)
+        
+        #If magnitude of reward is max, goal was scored therefore no more calculations needed
+        if(np.abs(rew) != self.max_reward):
+
+          #Iterate through collisions and give reward if mallet 1 hits puck
+          #TODO probably good to penalize mallet 1 collisions with anything else   
+          for i in range(self.data.ncon):
+
+                obj_1 = self.model.geom(self.data.contact[i].geom1).name
+                obj_2 = self.model.geom(self.data.contact[i].geom2).name
+                coll_set = {obj_1, obj_2}
+                
+                if "mallet2" in coll_set and "puck" in coll_set:
+                    rew += 0.5 * self.max_reward
+                    break
+
+        return rew
 
     #Helper function to calculate portions of reward which only depend on current observation
     #@param obs - Observation from one mallet's perspective

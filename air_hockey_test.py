@@ -30,13 +30,15 @@ action = [5, 0, 0, 1]
 terminated_correctly = False
 for i in range(50):
 
-	obs, rew, term, _, _ = env.step(action)
+    obs, rew, term, _, _ = env.step(action)
 
-	if(term):
-		assert rew["mal1"] == max_rew
-		assert rew["mal2"] == - max_rew
-		terminated_correctly = True
-		break
+    if(term):
+        terminated_correctly = True
+        rew1 = rew["mal1"]
+        rew2 = rew["mal2"]
+        assert rew1 == max_rew, f"Expected Mallet 1 reward to be {max_rew}. Instead was {rew1}."
+        assert rew2 == - max_rew, f"Expected Mallet 2 reward to be {-max_rew}. Instead was {rew2}."
+        break
 
 assert terminated_correctly
 
@@ -51,13 +53,15 @@ terminated_correctly = False
 
 for i in range(50):
 
-	obs, rew, term, _, _ = env.step(action)
+    obs, rew, term, _, _ = env.step(action)
 
-	if(term):
-		terminated_correctly = True
-		assert rew["mal1"] == -max_rew
-		assert rew["mal2"] == max_rew
-		break
+    if(term):
+        terminated_correctly = True
+        rew1 = rew["mal1"]
+        rew2 = rew["mal2"]
+        assert rew1 == -max_rew, f"Expected Mallet 1 reward to be {-max_rew}. Instead was {rew1}."
+        assert rew2 ==  max_rew, f"Expected Mallet 2 reward to be {max_rew}. Instead was {rew2}."
+        break
 
 assert terminated_correctly
 
