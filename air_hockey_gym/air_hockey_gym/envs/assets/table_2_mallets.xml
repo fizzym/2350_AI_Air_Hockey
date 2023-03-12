@@ -7,6 +7,7 @@
         <material name="white" specular="0.5" shininess="0.25" rgba="1.0 1.0 1.0 1"/>
         <material name="red" specular="0.5" shininess="0.25" rgba="1.0 0.0 0.0 1"/>
         <material name="blue" specular="0.5" shininess="0.25" rgba="0.0 0.0 1.0 1"/>
+        <material name="green" specular="0.5" shininess="0.25" rgba="0.0 1.0 0.0 1"/>
         <material name="transparent" specular="0.5" shininess="0.25" rgba="0.0 0.0 1.0 0"/>
         <material name="translucent" specular="0.5" shininess="0.25" rgba="1.0 1.0 1.0 0.3"/>
 
@@ -59,9 +60,9 @@
             <joint name="puck_y" type="slide" axis="0 1 0" damping="0.005" limited="false"/>
             <joint name="puck_yaw" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>
             <body name="puck">
-                <geom pos="0 0 0" name="puck" type="cylinder" material="grey" size="0.031 0.0025"
+                <geom pos="0 0 0" name="puck" type="cylinder" material="green" size="0.031 0.0025"
                       condim="4" priority="0"/>
-                <geom pos="0.02 0 0" type="cylinder" material="white" size="0.01 0.0026"
+                <geom pos="0.02 0 0" type="cylinder" material="grey" size="0.01 0.0026"
                       condim="4" contype="0" conaffinity="0"/>
                 <inertial pos="0 0 0" mass="0.013" diaginertia="2.5e-6 2.5e-6 5e-6"/>
             </body>
