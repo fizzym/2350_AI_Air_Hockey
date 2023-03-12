@@ -60,7 +60,15 @@ class AirHockeyEnv(MujocoEnv):
 	mal_2 - Mallet 2 
 
 	Value:
-	#TODO describe reward definition
+	All rewards are given in terms of percent of max_reward argument (default 10)
+    "=" indicates reward takes that value and is not changed based on any other conditions
+    "+=" indicates if condition is met that amount is added to current reward, in addition to any other conditions met
+
+    Goal scored on opponent = 100%
+    Opponent scored on you = -100%
+    Puck on opponent's side += 20%
+    Puck on your side += -20%
+    Hit puck += 50%
 
 
 	### Episode End
