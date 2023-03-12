@@ -3,7 +3,8 @@ from air_hockey_gym.envs import AirHockeyEnv
 import time
 import numpy as np
 
-env = AirHockeyEnv(render_mode="human")
+max_rew = 5.0
+env = AirHockeyEnv(max_reward=max_rew, render_mode="human")
 
 #File to test proper functioning of AirHockeyEnv
 #Tests start position is correct and that env will terminate correctly when puck reaches both goals
@@ -30,8 +31,10 @@ terminated_correctly = False
 for i in range(50):
 
 	obs, rew, term, _, _ = env.step(action)
-	env.render()
+
 	if(term):
+		assert rew["mal1"] == max_rew
+		assert rew["mal2"] == - max_rew
 		terminated_correctly = True
 		break
 
@@ -47,11 +50,13 @@ action = [0,1, 5, 0]
 terminated_correctly = False
 
 for i in range(50):
-	
+
 	obs, rew, term, _, _ = env.step(action)
-	env.render()
+
 	if(term):
 		terminated_correctly = True
+		assert rew["mal1"] == -max_rew
+		assert rew["mal2"] == max_rew
 		break
 
 assert terminated_correctly
@@ -61,11 +66,15 @@ obs, _ = env.reset()
 assert np.allclose(expect_start["mal1"], obs["mal1"])
 assert np.allclose(expect_start["mal2"], obs["mal2"])
 
-for i in range(0,500):
+for i in range(0,1000):
 	
 	action = env.action_space.sample()
-	env.step(action)
-	env.render()
+
+	ob, rew, term, _, _, = env.step(action)
+
+	if(term):
+		env.reset()
+	
 
 
 

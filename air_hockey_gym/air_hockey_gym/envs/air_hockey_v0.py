@@ -2,6 +2,7 @@ from gymnasium.envs.mujoco import MujocoEnv
 from gymnasium.spaces import Box, Dict
 import os
 import mujoco
+import time
 
 import numpy as np
 
@@ -84,12 +85,18 @@ class AirHockeyEnv(MujocoEnv):
     }
 
 
-
-    def __init__(self, **kwargs):
+    def __init__(self, max_reward=10, **kwargs):
 
     	#Name of agents used as keys in dictionaries
         self.mal1_name = "mal1"
         self.mal2_name = "mal2"
+
+        #Store max reward
+        self.max_reward = max_reward
+
+        #Distance of goal line from center of table
+        self.goal_dist = 1.0
+        self.goal_width = 0.13
 
         #Note: Other MuJoCo Envs do not seem to define limits to observation space
         #The limits don't seem to be checked/enforced anywhere so I have also not included them
@@ -125,11 +132,14 @@ class AirHockeyEnv(MujocoEnv):
         self.do_simulation(a_copy, self.frame_skip)
         ob = self._get_obs()
 
-        #TODO define reward function 
-        reward = 1.0
+        reward = {self.mal1_name : self._get_mal_1_rew(ob[self.mal1_name]), 
+        self.mal2_name : self._get_mal_2_rew(ob[self.mal2_name]) }
 
-        #Puck x position is first defined joint and is 0 at center of table
-        terminated = np.abs(self.data.qpos[0]) > 1
+        #Check if centre of puck is in goal
+        #Puck x position is first defined joint, puck y position is 2nd defined joint 
+        #and (0,0) at center of table
+        #Goal line is 1m in x from center and goal is 26 cm wide
+        terminated = np.abs(self.data.qpos[0]) > self.goal_dist and np.abs(self.data.qpos[1]) < self.goal_width
 
         #TODO determine if truncated condition is needed
         truncated = False
@@ -174,6 +184,43 @@ class AirHockeyEnv(MujocoEnv):
 
         return {self.mal1_name: m1_obs, self.mal2_name : m2_obs}
 
+ 
+ 	#@param - obs_1 Current observation of the table environment from mallet 1's perspective
+ 	#@returns double Reward for mallet 1 based on the current environment state
+    def _get_mal_1_rew(self, obs_1):
+    	return self._get_rew_from_obs(obs_1)
+
+
+    #@param obs_2 -  Current observation of the table environment from mallet 2's perspective
+ 	#@returns double - Reward for mallet 2 based on the current environment state
+    def _get_mal_2_rew(self, obs_2):
+    	return self._get_rew_from_obs(obs_2)
+
+    #Helper function to calculate portions of reward which only depend on current observation
+    #@param obs - Observation from one mallet's perspective
+    def _get_rew_from_obs(self, obs):
+    
+        rew = 0
+
+        #If scored on opponent, return max reward
+        if obs[0,0] > self.goal_dist and np.abs(obs[0,1]) < self.goal_width:
+            rew = self.max_reward
+
+        #If opponent scored on you, return negative max reward    
+        elif obs[0,0] < -self.goal_dist and np.abs(obs[0,1]) < self.goal_width:
+            rew = -self.max_reward
+
+        #If goal not scored, do typical reward calculation    
+        else:
+            #If puck on opponent's side, add reward
+            if(obs[0,0] > 0):
+                rew += 0.2 * self.max_reward
+
+            #If puck on our side, subtract reward
+            elif(obs[0,0] < 0):
+                rew -= 0.2 * self.max_reward
+
+        return rew
 
 
 
