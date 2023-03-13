@@ -212,7 +212,7 @@ class AirHockeyEnv(MujocoEnv):
                 if "mallet1" in coll_set and "puck" in coll_set:
                     rew += 0.5 * self.max_reward
                     break
-        return rew
+        return min(rew, self.max_reward)
 
     #@param obs_2 -  Current observation of the table environment from mallet 2's perspective
  	#@returns double - Reward for mallet 2 based on the current environment state
@@ -234,7 +234,7 @@ class AirHockeyEnv(MujocoEnv):
                     rew += 0.5 * self.max_reward
                     break
 
-        return rew
+        return min(rew, self.max_reward)
 
     #Helper function to calculate portions of reward which only depend on current observation
     #@param obs - Observation from one mallet's perspective
@@ -252,13 +252,8 @@ class AirHockeyEnv(MujocoEnv):
 
         #If goal not scored, do typical reward calculation    
         else:
-            #If puck on opponent's side, add reward
-            if(obs[0,0] > 0):
-                rew += 0.2 * self.max_reward
-
-            #If puck on our side, subtract reward
-            elif(obs[0,0] < 0):
-                rew -= 0.2 * self.max_reward
+            #Linear gradient reward based on distance between puck and own goal
+            rew += 0.2 * obs[0,0] * self.max_reward / self.goal_dist
 
         return rew
 
