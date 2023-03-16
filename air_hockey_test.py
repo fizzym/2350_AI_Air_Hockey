@@ -4,6 +4,7 @@ import time
 import numpy as np
 
 max_rew = 5.0
+SAMPLE_ACTION_STEPS = 1000
 env = AirHockeyEnv(max_reward=max_rew, render_mode="human")
 
 #File to test proper functioning of AirHockeyEnv
@@ -70,7 +71,7 @@ obs, _ = env.reset()
 assert np.allclose(expect_start["mal1"], obs["mal1"])
 assert np.allclose(expect_start["mal2"], obs["mal2"])
 
-for i in range(0,1000):
+for i in range(SAMPLE_ACTION_STEPS):
 	
 	action = env.action_space.sample()
 
