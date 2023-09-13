@@ -1,0 +1,2 @@
+# Air Hockey Gym Environment Tests
+Directory for testing functionality of environments within the air_hockey_gym folder. Files in this folder should act as unit tests for environment files i.e. test things such as observation format, objects spawning in proper locations, environments appearing visually correct, etc.

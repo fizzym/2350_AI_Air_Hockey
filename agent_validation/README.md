@@ -1,0 +1,2 @@
+# Air Hockey Gym Agent Validation
+Directory for holding files that test agent performance. Could be through unit tests (e.g. shoot puck at agent 100 times and record statistics on how often it can block the shot) or through competition with other agents.
