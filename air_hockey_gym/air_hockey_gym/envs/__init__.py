@@ -1,2 +1,3 @@
 from air_hockey_gym.envs.air_hockey_v0 import AirHockeyEnv
 from air_hockey_gym.envs.single_mallet_blocking_v0 import SingleMalletBlockEnv
+from air_hockey_gym.envs.single_mallet_blocking_v1_discrete import SingleMalletBlockDiscreteEnv

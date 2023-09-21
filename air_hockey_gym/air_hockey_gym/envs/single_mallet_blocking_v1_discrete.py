@@ -1,8 +1,7 @@
 from gymnasium.envs.mujoco import MujocoEnv
-from gymnasium.spaces import Box, Dict
+from gymnasium.spaces import Box, Discrete
 import os
 import mujoco
-import time
 
 import numpy as np
 from numpy.random import uniform as unif
@@ -16,7 +15,7 @@ DEFAULT_CAMERA_CONFIG = {
 }
 
 #TODO see if I need to add EzPickle
-class SingleMalletBlockEnv(MujocoEnv):
+class SingleMalletBlockDiscreteEnv(MujocoEnv):
     """
 
     ###Environment Description
@@ -105,32 +104,34 @@ class SingleMalletBlockEnv(MujocoEnv):
 
     #@param puck_box Bounding box which puck will spawn uniformly in.
     #       Format:[(x1,y1),(x2,y2)] Where (x1,y1) are coordinates of top left corner of box, and (x2,y2) is bottom right
-    #       In world coordinate frame (center of table, positive x towards opponent goal) 
+    #       In world coordinate frame (center of table, positive x towards opponent goal)
 
-    #@param mal2_x_offset Distance behind puck centre mallet will spawn
+    #@param mal2_puck_dist_range Absolute value of range of distances for spawn positions of mallet 2 and the puck
 
-    #@param mal2_max_y_offset Maximum distance in y that mallet centre can be offset from puck centre.
-    #       Mallet 2 y be chosen uniformly from [puck_y - max_offset, puck_y + max_offset]
-
-    #@param mal2_vel_range Absolute value of range of x-velocites mallet 2 can spawn with
+    #@param mal2_vel_range Absolute value of range of velocites mallet 2 can spawn with
 
     #@param mal1_box Bounding box which mallet1 will spawn uniformly in.
     #       Format:[(x1,y1),(x2,y2)] Where (x1,y1) are coordinates of top left corner of box, and (x2,y2) is bottom right
     #       In world coordinate frame (center of table, positive x towards opponent goal)  
     
-    def __init__(self, max_reward=10, puck_box=[(0.10,0.25), (0.55,-0.25)], mal2_x_offset = 0.4, 
-        mal2_max_y_offset = 0.02, mal2_vel_range = [0.5,2], mal1_box= [(-.90,0.15),(-0.7,-0.15)],  **kwargs):
+    def __init__(self, max_reward=10, puck_box=[(0.10,0.25), (0.55,-0.25)], mal2_puck_dist_range = [0.2,0.3], mal2_vel_range = [0.5,2], mal1_box= [(-.90,0.15),(-0.7,-0.15)], max_accel=5,  **kwargs):
 
         #Store max reward
         self.max_reward = max_reward
 
-        #Check inputed parameters are valid
-
-        #Offset greater than 5cm can lead to poor contact between mallet 2 and the puck
-        assert mal2_max_y_offset <= 0.05, "mal2_max_y_offset is greater than maximum allowable value of 0.05"
-
-        #Min value prevents puck and mallet 2 spawning on top of each other (mallet radius is 5cm, puck radius is 3.1cm)
-        assert mal2_x_offset >= 0.09, "mal2_x_offset is smaller than minimum allowable value of 0.09"
+        #Set up actions
+        self.max_accel = max_accel
+        #Initialize 0 vector and 8 allowable directions
+        self.actions = [[0.0,0.0],
+                        [1.0,0.0],
+                        [0.707,0.707],
+                        [0.0,1.0],
+                        [-0.707,0.707],
+                        [-1.0,0.0],
+                        [-0.707,-0.707],
+                        [0.0,-1.0],
+                        [0.707,-0.707]]
+        self.action_space = Discrete(len(self.actions))
 
         #Check box coordinates are well formed i.e. point 1 is above and to the left of point 2
         assert puck_box[0][0] <= puck_box[1][0], "puck_box x coordinates are malformed. Right coordinate is less than left coordinate"
@@ -141,13 +142,6 @@ class SingleMalletBlockEnv(MujocoEnv):
         #Check puck box bounds won't lead to overlapping objects
         #Leave at least 5cm between center of puck and center of table
         assert puck_box[0][0] >= 0.05, "puck_box x1 is less than minimum allowable value of 0.05"
-        #Round below values to ensure you don't get a bad assertion based on floating point calculations
-        #Ensure that mallet 2 won't clip into top wall (wall is 0.5m from center and mallet has radius 5 cm) 
-        assert puck_box[0][1] <= round(0.45 - mal2_max_y_offset, 2), "puck_box y1 is greater than allowable with current mal2_max_y_offset"
-        #Ensure that mallet 2 won't clip into back wall (wall is 1m from center)
-        assert puck_box[1][0] <= round(0.95 - mal2_x_offset, 2), "puck_box x2 is greater than allowable with current mal2_x_offset"
-        #Ensure mallet 2 won't clip into bottom wall (wall is -0.5m from center)
-        assert puck_box[1][1] >= round(-0.45 + mal2_max_y_offset, 2), "puck_box y2 is less than allowable with current mal2_max_y_offset"
 
         #Check that mallet 1 box bounds won't lead to overlapping objects
         #Values are limits of mallet 1 playing space plus/minus mallet 1 radius (5cm)
@@ -158,8 +152,7 @@ class SingleMalletBlockEnv(MujocoEnv):
 
         #Store parameters for use in reset function
         self.p_box = puck_box
-        self.m2_x_off = mal2_x_offset
-        self.m2_y_off = mal2_max_y_offset
+        self.m2_puck_dist = mal2_puck_dist_range
         self.m2_vel = mal2_vel_range
         self.m1_box = mal1_box
 
@@ -187,22 +180,15 @@ class SingleMalletBlockEnv(MujocoEnv):
             **kwargs,
         )
 
-    #@param a - action to be undertaken - shape (4,)
+    #@param a - number from 0-8
     #See documentation above
-    def step(self, a):
-        
-        #Copy action so we do not modify original
-        a_copy = list(a)
-        #If action has 4 values, set mallet 2 accelerations to zero
-        #Otherwise add mallet 2 accelerations as zeros to prevent simulation issue
-        if len(a) == 4:
-            a_copy[2] = 0
-            a_copy[3] = 0
-        else:
-            a_copy.append(0)
-            a_copy.append(0)
+    def step(self, a=0):
 
-        self.do_simulation(a_copy, self.frame_skip)
+        action = list(self.actions[a])
+        action.append(0)
+        action.append(0)
+
+        self.do_simulation(np.multiply(self.max_accel,action), self.frame_skip)
         ob = self._get_obs()
 
         self.num_steps += 1
@@ -250,11 +236,15 @@ class SingleMalletBlockEnv(MujocoEnv):
 
         #TODO remove hard-coding of coordinate offset
         #Pick mallet 2 start location behind puck
-        m2_x = puck_x + self.m2_x_off - 0.25
-        m2_y = puck_y + unif(-self.m2_y_off, self.m2_y_off)
+        m2_dist = unif(self.m2_puck_dist[0], self.m2_puck_dist[1])
+        theta = np.arctan(puck_y/(puck_x + 1))
+        m2_x = puck_x + np.cos(theta) * m2_dist - 0.25
+        m2_y = puck_y + np.sin(theta) * m2_dist
 
         #Pick mallet 2 initial velocity
         m2_vel = - unif(self.m2_vel[0], self.m2_vel[1])
+        m2_vel_x = m2_vel * np.cos(theta)
+        m2_vel_y = m2_vel * np.sin(theta)
 
         #Start with inital values for qpos and qvel
         qpos = self.init_qpos
@@ -270,7 +260,8 @@ class SingleMalletBlockEnv(MujocoEnv):
         qpos[6] = m2_x
         qpos[7] = m2_y
 
-        qvel[6] = m2_vel
+        qvel[6] = m2_vel_x
+        qvel[7] = m2_vel_y
 
         self.set_state(qpos, qvel)
         return self._get_obs()
