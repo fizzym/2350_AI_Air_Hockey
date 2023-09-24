@@ -12,7 +12,9 @@ MAX_VEL = 3.0
 
 DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": 0,
-    "distance": 2.4,
+    "distance": 2,
+    "lookat": np.array((0, 0, 0.1)),
+    "elevation": -90,
 }
 
 #TODO see if I need to add EzPickle
@@ -183,7 +185,7 @@ class SingleMalletBlockEnv(MujocoEnv):
             frame_skip=40,
             observation_space=observation_space,
             #TODO figure out how to define camera config
-            #default_camera_config=DEFAULT_CAMERA_CONFIG,
+            default_camera_config=DEFAULT_CAMERA_CONFIG,
             **kwargs,
         )
 
