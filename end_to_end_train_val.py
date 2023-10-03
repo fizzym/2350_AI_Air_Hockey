@@ -1,5 +1,5 @@
 from agents.rl_agent import RL_Agent
-
+import yaml
 
 """
 **********WORK IN PROGRESS - NOT FULLY IMPLEMENTED**********
@@ -39,12 +39,16 @@ if __name__ == '__main__':
     
     """
 
-    
-    raise Exception("End-to-End training and validation has not been implemented yet.")
+    # Load main config file
+    with open('config.yml', 'r') as file:
+        config = yaml.safe_load(file)
 
+    # Verify loaded params
+    main_params = config['main_params']
+    print(main_params)
 
+    agent_params = config['agent_params'][main_params['agent']]
+    print(agent_params)
 
-
-
-    
-
+    env_params = config['env_params'][main_params['env']]
+    print(env_params)
