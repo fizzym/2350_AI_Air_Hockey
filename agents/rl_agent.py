@@ -38,14 +38,14 @@ class RL_Agent:
         
         raise NotImplementedError
 
-    def save_agent(self, filepath: str):
-        """Saves agent to specified filepath.
+    def save_agent(self, dir_path: str):
+        """Saves agent to specified directory.
 
         Format of saved agent is specific to each agent and should only be loaded via the associated class.
         Will save agent into directory specified by filepath with name : 'agent_type.filetype'
 
         Args:
-            filepath: The path to the directory to save the agent.
+            dir_path: The path to the directory to save the agent.
 
         """
         raise NotImplementedError

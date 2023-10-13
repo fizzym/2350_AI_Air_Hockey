@@ -1,0 +1,7 @@
+---
+agent_info:
+  agent_name: 'x_entropy_agent'
+  version: "v0"
+  save_path: null
+
+env: 'env1'

@@ -1,0 +1,26 @@
+---
+# This is the main config file used by end_to_end_train_val.py
+# For official YAML docs: https://yaml.org/spec/1.2.2/
+
+main_params:
+  agent: 'agent1'
+  env: 'env1'
+
+agent_params:
+  agent1:
+    param1: 1
+    param2: 2
+  agent2:
+    param1: 3
+    param2: 4
+
+env_params:
+  env1:
+    param1: 11
+    param2: 12
+  env2:
+    param1: 13
+    param2: 14
+
+misc_params:
+  misc1: 21

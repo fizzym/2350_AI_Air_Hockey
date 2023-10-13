@@ -1,0 +1,12 @@
+
+---
+# Config file for Cross Entropy Agent V0
+
+init_params:
+  hidden_size: 128 #Number of neurons in the hidden layer.
+
+train_params:
+  batch_size: 64 #Number of training episodes to simulate before updating network.
+  percentile: 70 #Percentile of top episodes to use for training.
+  max_rew: 0 #Training stops when mean reward = max_rew
+  max_batches: 100 #Maximum number of batches to train for (overrides reward stop condition.)
