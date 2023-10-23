@@ -6,12 +6,26 @@ from collections import namedtuple
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
 
 # Stores the total reward for the episode and the steps taken in the episode
 Episode = namedtuple('Episode', field_names=['reward', 'steps'])
 # Stores the observation and the action the agent took
 EpisodeStep = namedtuple('EpisodeStep', field_names=['observation', 'action'])
+
+class Network(nn.Module):
+    def __init__(self, obs_shape, act_shape, hidden_size =128):
+        super().__init__()
+        self.input = nn.Linear(obs_shape, hidden_size)
+        self.output = nn.Linear(hidden_size, act_shape)
+
+    def forward(self, t):
+        t = F.relu(self.input(t))
+        t = F.softmax(self.output(t), dim=1)
+
+        return t
 
 class X_Entropy_Agent(RL_Agent):
     """Implementation of the RL_Agent interface using cross-entropy learning.
@@ -32,21 +46,8 @@ class X_Entropy_Agent(RL_Agent):
             hidden_size: The number of neurons in the hidden layer.
         """
 
-        # REMINDER:
-        # as the last layer outputs raw numerical values instead of 
-        # probabilities, when we later in the code use the network to predict
-        # the probabilities of each action  we need to pass the raw NN results 
-        # through a SOFTMAX to get the probabilities.
-
-        self._net = nn.Sequential(
-            nn.Linear(obs_shape, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, act_shape)
-        )
+        self._net = Network(obs_shape, act_shape, hidden_size)
         self._n_actions = act_shape
-
-        # SOFTMAX object - we use it to convert raw NN outputs to probabilities         
-        self._sm = nn.Softmax(dim=1) 
 
         if filepath:
             self.load_agent(filepath)
@@ -67,8 +68,7 @@ class X_Entropy_Agent(RL_Agent):
                          Supercedes max reward condition            
 
         Returns:
-            A training report (i.e. summary and statistics of training progression). 
-            TODO: define what form training report will take.
+            A training report (i.e. summary and statistics of training progression).
         """
 
         # PyTorch module that combines softmax and cross-entropy loss in one 
@@ -77,8 +77,7 @@ class X_Entropy_Agent(RL_Agent):
         optimizer = optim.Adam(params=self._net.parameters(), lr=0.01)
         
         # Tensorboard writer for plotting training performance
-        #TODO re-implement SummaryWriter
-        #writer = SummaryWriter(comment="-cartpole")
+        tb = SummaryWriter()
 
         # For every batch of episodes we identify the
         # episodes in the specified percentile and we train our NN on them.
@@ -106,6 +105,14 @@ class X_Entropy_Agent(RL_Agent):
             # Display summary of current batch
             print("%d: loss=%.3f, reward_mean=%.1f, reward_bound=%.1f" % (
                 iter_no, loss_v.item(), reward_m, reward_b))
+            
+            # Save tensorboard data
+            tb.add_scalar("Loss", loss_v.item(), iter_no)
+            tb.add_scalar("Reward Bound", reward_b, iter_no)
+            tb.add_scalar("Reward Mean", reward_m, iter_no)
+
+            # tb.add_histogram("input.weight", self._net.input.weight, iter_no)
+            # tb.add_histogram("output.weight", self._net.output.weight, iter_no)
 
             if reward_m > max_rew:
                 print("Solved!")
@@ -114,6 +121,8 @@ class X_Entropy_Agent(RL_Agent):
             if iter_no > max_batches:
                 print("Maximum batches reached. Terminating training.")
                 break
+                
+        tb.close()
 
         
     def save_agent(self, dir_path: str):
@@ -158,9 +167,7 @@ class X_Entropy_Agent(RL_Agent):
         # Convert the observation to a tensor that we can pass into the NN
         obs_v = torch.FloatTensor([np.array(obs)])
 
-        # Run the NN and convert its output to probabilities by mapping the 
-        # output through the SOFTMAX object.
-        act_probs_v = self._sm(self._net(obs_v))
+        act_probs_v = self._net(obs_v)
 
         # Unpack the output of the NN to extract the probabilities associated
         # with each action.
@@ -206,9 +213,7 @@ class X_Entropy_Agent(RL_Agent):
             # Convert the observation to a tensor that we can pass into the NN
             obs_v = torch.FloatTensor([np.array(obs)])
 
-            # Run the NN and convert its output to probabilities by mapping the 
-            # output through the SOFTMAX object.
-            act_probs_v = self._sm(self._net(obs_v))
+            act_probs_v = self._net(obs_v)
 
             # Unpack the output of the NN to extract the probabilities associated
             # with each action.
