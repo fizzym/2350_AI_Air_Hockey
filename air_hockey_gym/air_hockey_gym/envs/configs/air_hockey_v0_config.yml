@@ -1,0 +1,6 @@
+---
+class_name: "AirHockeyEnv"
+
+init_params:
+  max_reward: 20
+  render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'

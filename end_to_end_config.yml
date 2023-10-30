@@ -4,4 +4,5 @@ agent_info:
   version: "v0"
   save_path: null
 
-env: 'env1'
+env_info:
+  env_name: 'single_mallet_blocking_discrete_v1'

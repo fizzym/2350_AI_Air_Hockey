@@ -23,6 +23,9 @@ When adding a new agent type or version, please follow the below instructions to
 4. Create a new config file in `agents/agent_name` named `agent_name_vX_config.yml`
 5. Add parameters to the config file in the below format:
 ```
+---
+class_name: ...
+
 init_params:
   init_1: ...
   init_2: ...
@@ -31,9 +34,9 @@ train_params:
   train_1: ...
   trains_2: ..
 ``` 
+  - `class_name` is the name of the class within the file.
   - `init_params` should match the named argument's of the agent's constructor exactly
   - `train_params` should match the named arguments of the agent’s `train_agent` method exactly
-6.  Add agent class name and file name to class map in `get_agent_class_and_config` function of `end_to_end_utils.py`.
 
 ### Adding New Agent Version
 Assuming you want to create a new version of the agent “agent_name”, follow the below steps.
