@@ -53,13 +53,14 @@ class X_Entropy_Agent(RL_Agent):
             self.load_agent(filepath)
 
     #Default values imported from XEntropy_nn.py
-    def train_agent(self, train_env : Env, batch_size : int = 64,
+    def train_agent(self, train_env : Env, log_path : str, batch_size : int = 64,
                     percentile: int =70, max_rew = 40, max_batches : int = 100, **kwargs):
         """Trains agent on specified training environment using specified parameters.
 
         Args:
             train_env: The Gymnasium environment to use during training.
                        Observation and action shapes should match those specified in constructor.
+            log_path: Directory to save training logs to.
             batch_size: Number of training episodes to play before updating network weights.
             percentile: Only episodes with total reward in the specified percentile or above will be used  in training.
                         E.g. if percentile=70, the top 30% of episodes with the highest reward will be used.
@@ -77,7 +78,7 @@ class X_Entropy_Agent(RL_Agent):
         optimizer = optim.Adam(params=self._net.parameters(), lr=0.01)
         
         # Tensorboard writer for plotting training performance
-        tb = SummaryWriter()
+        tb = SummaryWriter(log_path)
 
         # For every batch of episodes we identify the
         # episodes in the specified percentile and we train our NN on them.

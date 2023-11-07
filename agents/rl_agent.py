@@ -24,12 +24,13 @@ class RL_Agent:
 
         raise NotImplementedError
 
-    def train_agent(self, train_env : Env, **kwargs):
+    def train_agent(self, train_env : Env, log_path : str, **kwargs):
         """Trains agent on specified training environment using specified parameters.
 
         Args:
             train_env: The Gymnasium environment to use during training.
                        Observation and action shapes should match those specified in constructor.
+            log_path: Directory to save training logs to. 
         
         Returns:
             A training report (i.e. summary and statistics of training progression). 

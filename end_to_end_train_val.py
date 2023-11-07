@@ -1,5 +1,7 @@
-from air_hockey_gym.envs import SingleMalletBlockDiscreteEnv
 from end_to_end_utils import load_yaml, get_agent_class_and_config, get_env_class_and_config
+import os
+import datetime
+import yaml
 
 """
 **********WORK IN PROGRESS - NOT FULLY IMPLEMENTED**********
@@ -32,14 +34,48 @@ if __name__ == '__main__':
     #Get agent class and config info
     agent_class, agent_config = get_agent_class_and_config(agent_info)
 
-    file = agent_info["save_path"]
+    file = agent_info["load_path"]
     #Create agent class with specified params
     #TODO fix hardcoding of observation length
     agent = agent_class(12, len(env.actions), 
                             filepath=file, **agent_config["init_params"])
             
     print("Agent loaded succesfully. Starting training.")
-    
-    agent.train_agent(env, **agent_config["train_params"])
 
+    #Get current date-time and format
+    cur_datetime = datetime.datetime.now()
+    formatted_datetime = cur_datetime.strftime("%m-%d-%H-%M")
+
+    #Make directory for storing information related to agent training and evaluation
+    save_path = "trained_models/" + agent_info["agent_name"] + "_" + agent_info["version"] 
+    save_path += "_" + env_info["env_name"] + "_" + formatted_datetime
+
+    os.mkdir(save_path)
+
+    #Make directory for training info in parent directory
+    train_path = save_path + "/training_info"
+    os.mkdir(train_path)
+
+    #Make directory for storing config file copies
+    config_save_path = save_path + "/configs"
+    os.mkdir(config_save_path)
+
+    #Make directory for storing validation data
+    val_path = save_path + "/val_info"
+    os.mkdir(val_path)
+
+    yamls = ["end_to_end_config", "agent_config", "env_config"]
+    configs = [main_config, agent_config, env_config]
+
+    # Write copies of config files into end-to-end directory
+    for i in range(0,3):
+        file = config_save_path + "/" + yamls[i] + ".yml"
+        with open(file, 'w') as yaml_file:
+            yaml.dump(configs[i], yaml_file, default_flow_style=False)
+    
+    agent.train_agent(env, train_path, **agent_config["train_params"])
     print("Agent training completed.")
+
+    agent.save_agent(save_path)
+
+    
