@@ -179,9 +179,10 @@ class X_Entropy_Agent(RL_Agent):
         #    network output stores the gradient functions (which we don't use) 
         act_probs = act_probs_v.data.numpy()[0]
 
-        #Return action (i.e. index) with highest probability.
-        #TODO make sure we don't want to sample probability dist. 
-        return np.argmax(act_probs)
+        # Sample the probability distribution the NN predicted to choose
+        # which action to take next.
+        # Chooses a number from [0,8] based on action probabilities outputted by NN
+        return np.random.choice(range(self._n_actions), p=act_probs)
 
     def _iterate_batches(self, env, batch_size):
         '''A generator function that generates batches of episodes that are used to train NN on.
