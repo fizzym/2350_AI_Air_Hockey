@@ -1,4 +1,5 @@
-from end_to_end_utils import load_yaml, get_agent_class_and_config, get_env_class_and_config
+from end_to_end_utils import load_yaml, get_agent_class_and_config, get_env_class_and_config, get_test_class_and_config
+
 import os
 import datetime
 import yaml
@@ -19,10 +20,12 @@ Saves agent, training info, and validation info into 'trained_agents/agent_name_
 
 if __name__ == '__main__':
 
+
     # Load main config file
     main_config = load_yaml("end_to_end_config.yml")
     agent_info = main_config["agent_info"]
     env_info = main_config["env_info"]
+    test_info = main_config["test_info"]
 
     #Get env class and config info
     env_class, env_config = get_env_class_and_config(env_info)
@@ -77,5 +80,15 @@ if __name__ == '__main__':
     print("Agent training completed.")
 
     agent.save_agent(save_path)
+
+    #Get test class and config info
+    test_class, test_config = get_test_class_and_config(test_info)
+
+    #Load test
+    val_test = test_class()
+
+    print("Testing agent.")
+
+    val_test.test_agent(agent, val_path, **test_config["test_params"])
 
     

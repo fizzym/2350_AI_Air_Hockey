@@ -6,3 +6,6 @@ agent_info:
 
 env_info:
   env_name: 'single_mallet_blocking_discrete_v1'
+
+test_info:
+  test_name: "basic_defence_val_test_v0"

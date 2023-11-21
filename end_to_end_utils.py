@@ -56,7 +56,7 @@ def get_agent_class_and_config(agent_info : dict):
 def get_env_class_and_config(env_info):
     """Helper function for getting the class of a specified environment and the associated config.
 
-    Finds the environment with given name and imports the class within. Uses the path "air_hockey_gym.envs.env_name/py" to import the module. 
+    Finds the environment with given name and imports the class within. Uses the path "air_hockey_gym.envs.env_name.py" to import the module. 
     Assumes config path is "air_hockey_gym/envs/configs/env_name_config.yml".
 
     Args:
@@ -86,3 +86,38 @@ def get_env_class_and_config(env_info):
 
    
     return(env_class, config_info)
+
+
+def get_test_class_and_config(test_info):
+    """Helper function for getting the class of a specified validation test and the associated config.
+
+    Finds the test with given name and imports the class within. Uses the path "agent_validation.test_name" to import the module. 
+    Assumes config path is "agent_validation/configs/test_name_config.yml".
+
+    Args:
+        test_info: A dictionary containing the test's name key "test_name"
+                    Should be the dict under the "test_info" key in end_to_end_config.yml.
+
+    Returns:
+        A tuple of (test_class, config_info).
+        test_class: The class of the specified test. 
+        config_info: A dict containing the config information for the specified test.
+    """
+    
+    test_name = test_info["test_name"]
+
+    #Load file containing environment
+    parent_path = "agent_validation."
+    test_path = parent_path + test_name
+    test_mod = importlib.import_module(test_path)
+
+    #Convert agent path from python to filesystem path and add config suffix
+    config_path = parent_path.replace(".", "/") + "configs/" + test_name + "_config.yml"
+    #Load config info
+    config_info = load_yaml(config_path)
+
+    #Get the env class 
+    test_class = getattr(test_mod, config_info["class_name"])
+
+   
+    return(test_class, config_info)
