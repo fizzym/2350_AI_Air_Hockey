@@ -5,11 +5,13 @@
 class_name: 'X_Entropy_Agent'
 
 init_params:
+  obs_shape: 12 #Number of input values
+  act_shape: 9 #Number of possible actions
   hidden_size: 128 #Number of neurons in the hidden layer.
 
 train_params:
   batch_size: 64 #Number of training episodes to simulate before updating network.
   percentile: 70 #Percentile of top episodes to use for training.
   max_rew: 0 #Training stops when mean reward = max_rew
-  max_batches: 100 #Maximum number of batches to train for (overrides reward stop condition.)
+  max_batches: 1 #Maximum number of batches to train for (overrides reward stop condition.)
 

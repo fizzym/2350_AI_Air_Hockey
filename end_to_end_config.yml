@@ -1,11 +1,11 @@
 ---
 agent_info:
-  agent_name: 'x_entropy_agent'
+  agent_name: 'ppo_agent'
   version: "v0"
   load_path: null #Path of previous agent save file, if starting from previously trained agent
 
 env_info:
-  env_name: 'single_mallet_blocking_discrete_v1'
+  env_name: 'single_mallet_shooting_v1_discrete'
 
 test_info:
   test_name: "basic_defence_val_test_v0"

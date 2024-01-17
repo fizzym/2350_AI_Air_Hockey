@@ -1,0 +1,14 @@
+
+---
+# Config file for Proximal Policy Optimization Agent V0
+
+class_name: 'PPO_Agent'
+
+init_params:
+  _: 0
+
+train_params:
+  batch_size: 64 #Number of training episodes to simulate before updating network.
+  max_rew: 0 #Training stops when mean reward = max_rew
+  max_batches: 10 #Maximum number of batches to train for (overrides reward stop condition.)
+

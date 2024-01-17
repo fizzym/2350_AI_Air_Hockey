@@ -12,12 +12,10 @@ class RL_Agent:
     
     """
 
-    def __init__(self, obs_shape, act_shape, filepath: Union[str, None] = None, **kwargs):
+    def __init__(self, filepath: Union[str, None] = None, **kwargs):
         """Initializes the desired agent with specified arguments.
 
         Args:
-            obs_shape: The shape of the observations the agent will use as inputs.
-            act_shape: The shape of the actions that the agent will output. 
             filepath:  Path for loading previously trained agent. If not specified agent will
                         start in default state
         """

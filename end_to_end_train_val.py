@@ -39,9 +39,7 @@ if __name__ == '__main__':
 
     file = agent_info["load_path"]
     #Create agent class with specified params
-    #TODO fix hardcoding of observation length
-    agent = agent_class(12, len(env.actions), 
-                            filepath=file, **agent_config["init_params"])
+    agent = agent_class(filepath=file, **agent_config["init_params"])
             
     print("Agent loaded succesfully. Starting training.")
 

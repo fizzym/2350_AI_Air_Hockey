@@ -1,0 +1,16 @@
+---
+class_name: 'SingleMalletShootDiscreteEnvV1'
+
+init_params:
+  render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'
+  max_reward: 10
+  puck_box:
+  - [-0.6, 0.25]
+  - [-0.2, -0.25]
+  mal1_box: 
+  - [-0.9, 0.3]
+  - [-0.7, -0.3]
+  mal2_box: 
+  - [0.7, 0.3]
+  - [0.9, -0.3]
+  max_accel: 2.5

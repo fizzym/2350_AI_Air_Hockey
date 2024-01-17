@@ -35,14 +35,14 @@ class X_Entropy_Agent(RL_Agent):
 
     """
 
-    def __init__(self, obs_shape, act_shape, filepath: Union[str, None] = None, hidden_size =128, **kwargs):
+    def __init__(self, filepath: Union[str, None] = None, obs_shape = 12, act_shape = 9, hidden_size = 128, **kwargs):
         """Initializes the desired agent with specified arguments.
 
         Args:
-            obs_shape: The shape of the observations the agent will use as inputs.
-            act_shape: The shape of the actions that the agent will output. 
             filepath:  Path for loading previously trained agent. If not specified agent will
                         start in default state
+            obs_shape: The shape of the observations the agent will use as inputs.
+            act_shape: The shape of the actions that the agent will output. 
             hidden_size: The number of neurons in the hidden layer.
         """
 
