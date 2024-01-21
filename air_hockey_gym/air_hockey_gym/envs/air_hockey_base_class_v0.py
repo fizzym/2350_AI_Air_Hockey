@@ -93,7 +93,7 @@ class AirHockeyBaseClass(MujocoEnv):
 
             #Modify action space for two agents
             if use_both_agents:
-                self.action_space = Dict({self.mal1_name : self.action_space, self.mal2_name : oself.action_space})
+                self.action_space = Dict({self.mal1_name : self.action_space, self.mal2_name : self.action_space})
 
         
         self.asset_path = os.path.join(os.path.dirname(__file__), "assets/")
