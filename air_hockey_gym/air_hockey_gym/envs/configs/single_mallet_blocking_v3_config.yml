@@ -1,0 +1,16 @@
+---
+class_name: 'SingleMalletBlockEnv'
+
+init_params:
+  max_reward: 20
+  render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'
+  puck_box:
+  - [0.1, 0.25]
+  - [0.55, -0.25]
+  mal2_puck_dist_range: [0.2, 0.3]
+  mal2_vel_range: [0.5, 1.5]
+  mal1_box: 
+  - [-0.90, 0.15]
+  - [-0.7,-0.15]
+  max_accel: 2.5
+  discrete_actions: True

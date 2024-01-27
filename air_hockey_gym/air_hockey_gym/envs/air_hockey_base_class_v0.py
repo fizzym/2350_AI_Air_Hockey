@@ -75,6 +75,17 @@ class AirHockeyBaseClass(MujocoEnv):
             self.mal1_name = "mal1"
             self.mal2_name = "mal2"
             observation_space = Dict({self.mal1_name : observation_space, self.mal2_name : observation_space})
+        
+        self.asset_path = os.path.join(os.path.dirname(__file__), "assets/")
+
+        MujocoEnv.__init__(
+            self,
+            self.asset_path + "table_2_mallets.xml",
+            #Defines how many time steps should be executed between each step function call 
+            frame_skip=40,
+            observation_space=observation_space,
+            **kwargs,
+        )
 
         if discrete_actions:
             #Set up discrete actions
@@ -91,21 +102,9 @@ class AirHockeyBaseClass(MujocoEnv):
                             [0.707,-0.707]]
             self.action_space = Discrete(len(self.actions))
 
-            #Modify action space for two agents
-            if use_both_agents:
-                self.action_space = Dict({self.mal1_name : self.action_space, self.mal2_name : self.action_space})
-
-        
-        self.asset_path = os.path.join(os.path.dirname(__file__), "assets/")
-
-        MujocoEnv.__init__(
-            self,
-            self.asset_path + "table_2_mallets.xml",
-            #Defines how many time steps should be executed between each step function call 
-            frame_skip=40,
-            observation_space=observation_space,
-            **kwargs,
-        )
+        #Modify action space for two agents
+        if use_both_agents:
+            self.action_space = Dict({self.mal1_name : self.action_space, self.mal2_name : self.action_space})
 
     def step_sim(self, agent_action, opp_action = [0,0]):
         """Runs a single simulation step with given action.

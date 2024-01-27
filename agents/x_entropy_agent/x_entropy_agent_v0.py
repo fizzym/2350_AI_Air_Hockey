@@ -1,6 +1,6 @@
 from agents.rl_agent import RL_Agent
 from typing import Union
-from gym import Env
+from gymnasium import Env
 
 from collections import namedtuple
 import numpy as np

@@ -38,7 +38,6 @@ class DefenceValTest(ValidationTest):
 
             for i in range(100):
                 obs = env.set_custom_state(pos, vel)
-                env.render()
 
                 terminated = False
                 while not terminated:
