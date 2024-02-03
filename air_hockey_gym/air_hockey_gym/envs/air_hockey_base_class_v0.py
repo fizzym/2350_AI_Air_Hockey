@@ -242,6 +242,10 @@ class AirHockeyBaseClass(MujocoEnv):
             m1_obs = np.copy(obs)
             #Mallet 2 reference frame is 180 rotation of Mallet 1 frame, therefore multiply all values by -1
             m2_obs = -1 * np.copy(obs)
+            #Switch ordering of values in M2 obs so that controlled mallet is still indices 4-8 and 
+            #opponent mallet is indices 8-12
+            m2_obs[4:8] = -1 * obs[8:12]
+            m2_obs[8:12] = -1 * obs[4:8]
 
             obs = {self.mal1_name: m1_obs, self.mal2_name : m2_obs}
 
