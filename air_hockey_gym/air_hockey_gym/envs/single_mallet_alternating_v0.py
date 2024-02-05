@@ -50,7 +50,9 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
 
     Opponent scored on you = -100%
     Scored on opponent = 100%
-    Hit anything other than puck -= 10%
+    Hit anything other than puck = -25%
+    Puck position = +0.1% * (puck x position)
+    Puck crosses from agent side to opponent side = 500% * (puck x velocity)
 
 	### Episode End
 	A training episode terminates when the any of the following conditions are met:
@@ -73,23 +75,27 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     }
 
     
-    def __init__(self, max_reward=1,
+    def __init__(self, max_reward=1, train_mode=2,
                  mal1_box_def=[(-0.8,0),(-0.8,0)], mal1_box_off=[(-0.8,0),(-0.8,0)],
                  puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)],
                  mal2_puck_dist_range=[0.25,0.25], mal2_vel_range=[1,1], mal2_box_off=[(0.9,0.4),(0.9,0.4)],
-                 max_accel=5, discrete_actions = True,  **kwargs):
+                 max_accel=5, discrete_actions = True, **kwargs):
                  """
                  All coordinates are in world coordinate frame (center of table, 
                  positive x towards opponent goal)
 
                  Inputs:
                     max_reward: Maximum reward to return. All rewards are given as percent of this value.
-                    puck_box: Bounding box which puck will spawn uniformly in.
+                    train_mode: Selects between defence-only (0), offence-only (1), and alternating (2).
+                    mal1_box_def: Bounding box which mallet1 will spawn uniformly in. (DEFENCE)
                             [(x1,y1),(x2,y2)] Where (x1,y1) are coordinates of top left corner of box, 
                             and (x2,y2) is bottom right
-                    mal2_puck_dist_range: Absolute value of range of distances between mallet 2 and the puck
-                    mal2_vel: Absolute value of range of velocites mallet 2 can spawn with
-                    mal1_box: Bounding box which mallet1 will spawn uniformly in. Same format as puck_box.
+                    mal1_box_off: Bounding box which mallet1 will spawn uniformly in. (OFFENCE)
+                    puck_box_def: Bounding box which puck will spawn uniformly in. (DEFENCE)
+                    puck_box_def: Bounding box which puck will spawn uniformly in. (OFFENCE)
+                    mal2_puck_dist_range: Absolute value of range of distances between mallet 2 and the puck. (DEFENCE)
+                    mal2_vel: Absolute value of range of velocites mallet 2 can spawn with. (DEFENCE)
+                    mal2_box_off: Bounding box which mallet2 will spawn uniformly in. (OFFENCE)
                     max_accel: The max acceleration of the agent mallet
                     discrete_actions: Flag to set if environment's action space should be discrete or continous.
                               Will be continous if False, discrete if True
@@ -100,6 +106,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
        
 
                  #Store parameters for use in reset function
+                 self.train_mode = train_mode # 0 - Defence, 1 - Offence, 2 - Alternating
                  self.m1_box_def = mal1_box_def
                  self.m1_box_off = mal1_box_off
                  self.p_box_def = puck_box_def
@@ -177,12 +184,17 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     
     def reset_model(self):
         self.num_steps = 0
-        if self.def_flag:
-            self.def_flag = False
+        if self.train_mode == 0:
             return self.reset_def()
-        else:
-            self.def_flag = True
+        elif self.train_mode == 1:
             return self.reset_off()
+        else:
+            if self.def_flag:
+                self.def_flag = False
+                return self.reset_def()
+            else:
+                self.def_flag = True
+                return self.reset_off()
         
     
     def reset_def(self):
@@ -259,6 +271,6 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
 
         #Reward based on x vel of puck when crossing middle
         if self.agent_side_flag and self.data.qpos[0] >= 0:
-            rew += 0.8 * self.data.qvel[0] / self.goal_dist * self.max_reward
+            rew += 5 * self.data.qvel[0] / self.goal_dist * self.max_reward
 
         return rew
