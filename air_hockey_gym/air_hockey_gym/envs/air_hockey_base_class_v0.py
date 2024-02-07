@@ -1,5 +1,5 @@
 from gymnasium.envs.mujoco import MujocoEnv
-from gymnasium.spaces import Box, Discrete
+from gymnasium.spaces import Box, Discrete, Dict
 import os
 import mujoco
 

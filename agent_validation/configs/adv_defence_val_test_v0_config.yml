@@ -1,0 +1,16 @@
+---
+# Config file for Advanced Defence Test V0
+
+class_name: "AdvDefenceValTest"
+
+test_params: 
+  render_mode: "rgb_array" #Options are 'human', 'rgb_array', 'depth_array'
+  discrete_actions: True
+  data_name: "adv_def_test_data_50_eps_02-02-15-43.pkl"
+  #Data options:
+  # - adv_def_test_data_50_eps_02-02-15-43.pkl - Current main testing data.
+  #   50 goals with variety of shot styles (slow, fast, bounce, etc.)
+  # - adv_def_test_data_50_eps_02-02-15-27.pkl - 50 goals with variety of shots.
+  #   Includes some shots were puck bounced off stationary mallet or opponent wall 
+  #   So may be unreliable
+  # - adv_def_test_data_5_eps_01-25-15-26.pkl - Toy dataset with only 5 goals
