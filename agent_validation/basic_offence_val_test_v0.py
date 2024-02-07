@@ -1,24 +1,26 @@
 from agent_validation.val_test import ValidationTest
 from agents.rl_agent import RL_Agent
-from air_hockey_gym.envs.single_mallet_blocking_discrete_v2 import SingleMalletBlockDiscreteEnv
+from air_hockey_gym.envs.single_mallet_shooting_v2 import SingleMalletShootEnvV2
 from torch.utils.tensorboard import SummaryWriter 
 
 #Define map which translates IC used to text for printout
-ic_map = {0: "straight shots", 1 : "angled shots from left side (from agent's perspective)", 2: "angled shots from right side (from agent's perspective)"}
+ic_map = {0: "straight ahead", 1 : "to left (from agent's perspective)", 2: "to right (from agent's perspective)"}
 
-class DefenceValTest(ValidationTest):
+#Number of episodes to run for each IC
+NUM_EPISODES = 100
+
+class BasicOffenceValTest(ValidationTest):
     
     def __init__(self, **kwargs):
         """Perform any required initialization.
         """
     
         #Define initial conditions for test. First is straight on shot, second and third are angled shots from opposite edges of table
-        #See following link for derivation: https://docs.google.com/document/d/1JFZWgkHZAzNGL9JAqiXypYBr8AXa6GQ8JFpYiKQmDbI/edit#heading=h.uppldcgn3n2g  
-        self.pos_ICs = [[0.5, 0, -0.8, 0, 0.65, 0], [0.5, 0.25, -0.8, 0, 0.5986, 0.26644], [0.5, -0.25, -0.8, 0, 0.5986, -0.26644]]
-        self.vel_ICs =  [[0, 0, 0, 0, -1, 0], [0, 0, 0, 0, -0.9684, -0.1644], [0, 0, 0, 0, -0.9684, 0.1644]]
+        self.pos_ICs = [[-0.5, 0, -0.8, 0, 0.9, 0.4], [-0.5, 0.25, -0.8, 0, 0.9, 0.4], [-0.5, -0.25, -0.8, 0, 0.9, 0.4]]
+        self.vel_ICs =  [[0,0,0,0,0,0], [0,0,0,0,0,0], [0,0,0,0,0,0]]
 
 
-    def test_agent(self, agent : RL_Agent, log_path : str, render_mode, **kwargs):
+    def test_agent(self, agent : RL_Agent, log_path : str, render_mode, discrete_actions = True, **kwargs):
         """Perform desired test. Saves relevant statistics using tensorboard to log_path.
 
         Args:
@@ -28,7 +30,7 @@ class DefenceValTest(ValidationTest):
 
         """
 
-        env = SingleMalletBlockDiscreteEnv(render_mode = render_mode)
+        env = SingleMalletShootEnvV2(render_mode = render_mode, discrete_actions = discrete_actions)
         tb = SummaryWriter(log_path)
         
         for k in range(len(self.pos_ICs)):
@@ -36,7 +38,7 @@ class DefenceValTest(ValidationTest):
             vel = self.vel_ICs[k]
             num_goals = 0
 
-            for i in range(100):
+            for i in range(NUM_EPISODES):
                 obs = env.set_custom_state(pos, vel)
 
                 terminated = False
@@ -46,15 +48,15 @@ class DefenceValTest(ValidationTest):
                     obs, rew, terminated, _, info_dict = env.step(action)
 
                     if terminated:
-                        if info_dict["termination_reason"] == "Goal scored on agent":
+                        if info_dict["termination_reason"] == "Goal scored on opponent":
                             num_goals += 1
                         
                         #Reset model so step counter is also reset
                         env.reset()
             
-            tb.add_scalar("Basic Defence Test - Goals Scored On", num_goals, k)
+            tb.add_scalar("Basic Offensive Test - Goals Scored", num_goals, k)
 
 
-            print("Agent was scored on", num_goals, "times via", ic_map[k])          
+            print("Agent scored", num_goals, "goals from puck", ic_map[k])          
 
         tb.close()
