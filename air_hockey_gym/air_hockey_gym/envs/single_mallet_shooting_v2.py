@@ -97,7 +97,7 @@ class SingleMalletShootEnvV2(AirHockeyBaseClass):
     #TODO is there a standard way to define default values
     #Note all below distance values are in meters
     
-    def __init__(self, max_reward=10, puck_box=[(-0.5,0), (-0.5,0)], mal1_box= [(-0.9,0),(-0.9,0)], mal2_box= [(0.05,0.45),(0.95,-0.45)],
+    def __init__(self, max_reward=1, puck_box=[(-0.5,0), (-0.5,0)], mal1_box= [(-0.9,0),(-0.9,0)], mal2_box= [(0.05,0.45),(0.95,-0.45)],
                  max_accel=5, discrete_actions = True, **kwargs):
         """
         All coordinates are in world coordinate frame (center of table, 
@@ -155,7 +155,6 @@ class SingleMalletShootEnvV2(AirHockeyBaseClass):
 
         self.discrete_act = discrete_actions
         self.num_steps = 0
-        self.crossed = False
 
     def step(self, a):
         """
@@ -213,7 +212,6 @@ class SingleMalletShootEnvV2(AirHockeyBaseClass):
         """
         Resets the environment including the puck, mallet1, and mallet2
         """
-        self.crossed = False
         self.num_steps = 0
 
         # Spawn puck and agent within desired box
@@ -226,7 +224,7 @@ class SingleMalletShootEnvV2(AirHockeyBaseClass):
 
         Inputs:
             obs: Observation of the environment state.
-        Outpus:
+        Outputs:
             reward (float): Reward for current state.
         """
         
@@ -238,10 +236,6 @@ class SingleMalletShootEnvV2(AirHockeyBaseClass):
 
         rew = 0
 
-        #Penalize if the puck has not yet crossed the center
-        if not self.crossed:
-            rew += -0.05 * self.max_reward
-
         #Iterate through collisions and give positive reward if mallet hits puck
         #Give negative reward for colliding with anything else
         for i in range(self.data.ncon):
@@ -249,21 +243,15 @@ class SingleMalletShootEnvV2(AirHockeyBaseClass):
             obj_1 = self.model.geom(self.data.contact[i].geom1).name
             obj_2 = self.model.geom(self.data.contact[i].geom2).name
             coll_set = {obj_1, obj_2}
-                
-            if "mallet1" in coll_set and "puck" in coll_set:
-                vel_diff = self.data.qvel[3] - self.data.qvel[0]
-                rew += 0.2 * vel_diff * self.max_reward
 
-            elif "mallet1" in coll_set:
-                rew += -self.max_reward
+            if "mallet1" in coll_set and "puck" not in coll_set:
+                rew += -0.15 * self.max_reward
 
-        #If puck crosses back into opponent's side, give positive reward based on how fast puck is moving
-        if not self.crossed and np.abs(self.data.qpos[0]) <= 0.05 and self.data.qvel[0] > 0:
-            self.crossed = True
-            rew += 0.1 * self.data.qvel[0] * self.max_reward
-        
-        #Penalize if agent is in front of puck according the x distance
-        if self.data.qpos[0] < self.data.qpos[3]:
-            rew += -0.1 * (self.data.qpos[3] - self.data.qpos[0]) * self.max_reward
+        #Reward based on x pos of puck
+        rew += 0.001 * self.data.qpos[0] / self.goal_dist * self.max_reward
+
+        #Reward based on x vel of puck when crossing middle
+        if abs(self.data.qpos[0] / self.goal_dist) < 0.05 and self.data.qvel[0] > 0:
+            rew += 0.5 * self.data.qvel[0] / self.goal_dist * self.max_reward
 
         return rew
