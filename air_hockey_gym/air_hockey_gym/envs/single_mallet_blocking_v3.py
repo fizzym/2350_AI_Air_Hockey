@@ -80,7 +80,7 @@ class SingleMalletBlockEnv(AirHockeyBaseClass):
     }
 
     
-    def __init__(self, max_reward=10, puck_box=[(0.10,0.25), (0.55,-0.25)], mal2_puck_dist_range = [0.2,0.3],
+    def __init__(self, max_reward=1, puck_box=[(0.10,0.25), (0.55,-0.25)], mal2_puck_dist_range = [0.2,0.3],
                  mal2_vel_range = [0.5,2], mal1_box= [(-.90,0.15),(-0.7,-0.15)],
                  max_accel=5, discrete_actions = True,  **kwargs):
                  """
@@ -212,7 +212,6 @@ class SingleMalletBlockEnv(AirHockeyBaseClass):
 
         Outputs:
             reward (float): Reward for current state.
-
         """
 
         
@@ -231,16 +230,15 @@ class SingleMalletBlockEnv(AirHockeyBaseClass):
             obj_1 = self.model.geom(self.data.contact[i].geom1).name
             obj_2 = self.model.geom(self.data.contact[i].geom2).name
             coll_set = {obj_1, obj_2}
-                
-            if "mallet1" in coll_set and "puck" in coll_set:
-                if obs[0] > obs[4]:
-                    rew += 0.1 * self.max_reward
 
-            elif "mallet1" in coll_set:
-                rew += -0.5 * self.max_reward
+            if "mallet1" in coll_set and "puck" not in coll_set:
+                rew += -0.15 * self.max_reward
 
-        #If puck crosses back into opponent's side, give positive reward based on how fast puck is moving
-        if(self.data.qpos[0] > 0 and self.data.qvel[0] > 0):
-            rew += 0.1 * self.data.qvel[0] * self.max_reward
+        #Reward based on x pos of puck
+        rew += 0.001 * self.data.qpos[0] / self.goal_dist * self.max_reward
+
+        #Reward based on x vel of puck when crossing middle
+        if abs(self.data.qpos[0] / self.goal_dist) < 0.05 and self.data.qvel[0] > 0:
+            rew += 0.5 * self.data.qvel[0] / self.goal_dist * self.max_reward
 
         return rew
