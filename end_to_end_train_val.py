@@ -1,4 +1,4 @@
-from end_to_end_utils import load_yaml, get_agent_class_and_config, get_env_class_and_config, get_test_class_and_config
+from end_to_end_utils import load_yaml, get_agent_class_and_config, get_env_class_and_config, get_test_classes_and_configs
 
 import os
 import datetime
@@ -80,13 +80,14 @@ if __name__ == '__main__':
     agent.save_agent(save_path)
 
     #Get test class and config info
-    test_class, test_config = get_test_class_and_config(test_info)
+    class_conf_list = get_test_classes_and_configs(test_info)
+    print("Starting agent testing.")
 
-    #Load test
-    val_test = test_class()
+    for (test_name, test_class, test_config) in class_conf_list:
+        #Load test
+        val_test = test_class()
 
-    print("Testing agent.")
-
-    val_test.test_agent(agent, val_path, **test_config["test_params"])
+        print("\nRunning test:", test_name)
+        val_test.test_agent(agent, val_path, **test_config["test_params"])
 
     

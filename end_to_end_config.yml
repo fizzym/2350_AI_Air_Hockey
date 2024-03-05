@@ -8,4 +8,8 @@ env_info:
   env_name: 'single_mallet_shooting_v1_discrete'
 
 test_info:
-  test_name: "basic_defence_val_test_v0"
+  #Overrides individual render modes for validation tests. Set as 'None' to use mode in individual configs
+  render_mode: "rgb_array" 
+  test_names: 
+    - "basic_defence_val_test_v0"
+    - "basic_offence_val_test_v0"

@@ -88,36 +88,47 @@ def get_env_class_and_config(env_info):
     return(env_class, config_info)
 
 
-def get_test_class_and_config(test_info):
-    """Helper function for getting the class of a specified validation test and the associated config.
+def get_test_classes_and_configs(test_info):
+    """Helper function for getting the classes of specified validation tests and the associated configs.
 
-    Finds the test with given name and imports the class within. Uses the path "agent_validation.test_name" to import the module. 
+    
+    Finds the tests with given names and imports the classes within. Uses the path "agent_validation.test_name" to import the module. 
     Assumes config path is "agent_validation/configs/test_name_config.yml".
 
     Args:
-        test_info: A dictionary containing the test's name key "test_name"
+        test_info: A dictionary containing a list of test names under key "test_names"
                     Should be the dict under the "test_info" key in end_to_end_config.yml.
 
     Returns:
-        A tuple of (test_class, config_info).
+        A list of tuples of (name, test_class, config_info).
+        test_name: Name of the specified test. 
         test_class: The class of the specified test. 
         config_info: A dict containing the config information for the specified test.
     """
     
-    test_name = test_info["test_name"]
+    test_names = test_info["test_names"]
+    class_conf_list = []
 
-    #Load file containing environment
-    parent_path = "agent_validation."
-    test_path = parent_path + test_name
-    test_mod = importlib.import_module(test_path)
+    for name in test_names:
+        #Load file containing environment
+        parent_path = "agent_validation."
+        test_path = parent_path + name
+        test_mod = importlib.import_module(test_path)
 
-    #Convert agent path from python to filesystem path and add config suffix
-    config_path = parent_path.replace(".", "/") + "configs/" + test_name + "_config.yml"
-    #Load config info
-    config_info = load_yaml(config_path)
+        #Convert agent path from python to filesystem path and add config suffix
+        config_path = parent_path.replace(".", "/") + "configs/" + name + "_config.yml"
+        #Load config info
+        config_info = load_yaml(config_path)
 
-    #Get the env class 
-    test_class = getattr(test_mod, config_info["class_name"])
+        #If a render mode is specified in end_to_end config, set all val test render modes to this value
+        if test_info["render_mode"]:
+            config_info["test_params"]["render_mode"] = test_info["render_mode"]
+
+        #Get the env class 
+        test_class = getattr(test_mod, config_info["class_name"])
+
+        #Add tuple to list of tests
+        class_conf_list.append((name, test_class, config_info))
 
    
-    return(test_class, config_info)
+    return class_conf_list
