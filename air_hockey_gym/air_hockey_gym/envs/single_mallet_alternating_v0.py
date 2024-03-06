@@ -82,7 +82,8 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
 
                  Inputs:
                     max_reward: Maximum reward to return. All rewards are given as percent of this value.
-                    train_mode: Selects between defence-only (0), offence-only (1), and alternating (2).
+                    off_def_ratio: Ratio of offensive to defensive simulations to run. Runs only a single type if one element is 0.
+                    max_steps: Maximum simulation steps to wait before forcefully terminating.
                     mal1_box_def: Bounding box which mallet1 will spawn uniformly in. (DEFENCE)
                             [(x1,y1),(x2,y2)] Where (x1,y1) are coordinates of top left corner of box, 
                             and (x2,y2) is bottom right
@@ -97,8 +98,8 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                               Will be continous if False, discrete if True
         
                  """
-                 super().__init__(max_reward=max_reward, use_both_agents=False, max_accel = max_accel,
-                                  discrete_actions= discrete_actions, **kwargs)
+                 super().__init__(max_reward=max_reward, use_both_agents=False, max_accel=max_accel,
+                                  discrete_actions=discrete_actions, **kwargs)
        
 
                  #Store parameters for use in reset function
