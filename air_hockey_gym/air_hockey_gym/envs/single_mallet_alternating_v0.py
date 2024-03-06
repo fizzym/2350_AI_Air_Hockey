@@ -1,8 +1,4 @@
 from air_hockey_gym.envs.air_hockey_base_class_v0 import AirHockeyBaseClass
-from gymnasium.envs.mujoco import MujocoEnv
-from gymnasium.spaces import Box, Discrete
-import os
-import mujoco
 
 import numpy as np
 from numpy.random import uniform as unif
@@ -75,7 +71,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     }
 
     
-    def __init__(self, max_reward=1, train_mode=2,
+    def __init__(self, max_reward=1, off_def_ratio=[1,1], max_steps=200,
                  mal1_box_def=[(-0.8,0),(-0.8,0)], mal1_box_off=[(-0.8,0),(-0.8,0)],
                  puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)],
                  mal2_puck_dist_range=[0.25,0.25], mal2_vel_range=[1,1], mal2_box_off=[(0.9,0.4),(0.9,0.4)],
@@ -92,7 +88,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                             and (x2,y2) is bottom right
                     mal1_box_off: Bounding box which mallet1 will spawn uniformly in. (OFFENCE)
                     puck_box_def: Bounding box which puck will spawn uniformly in. (DEFENCE)
-                    puck_box_def: Bounding box which puck will spawn uniformly in. (OFFENCE)
+                    puck_box_off: Bounding box which puck will spawn uniformly in. (OFFENCE)
                     mal2_puck_dist_range: Absolute value of range of distances between mallet 2 and the puck. (DEFENCE)
                     mal2_vel: Absolute value of range of velocites mallet 2 can spawn with. (DEFENCE)
                     mal2_box_off: Bounding box which mallet2 will spawn uniformly in. (OFFENCE)
@@ -106,7 +102,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
        
 
                  #Store parameters for use in reset function
-                 self.train_mode = train_mode # 0 - Defence, 1 - Offence, 2 - Alternating
+                 self.off_def_ratio = off_def_ratio
                  self.m1_box_def = mal1_box_def
                  self.m1_box_off = mal1_box_off
                  self.p_box_def = puck_box_def
@@ -116,12 +112,12 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                  self.m2_box_off = mal2_box_off
                 
                  self.discrete_act = discrete_actions
+                 self.max_steps = max_steps
                  #Initialize step counter
                  self.num_steps = 0
-                 #Create flag for puck on agent side
-                 self.agent_side_flag = False
                  #Create alternating def/off flag
-                 self.def_flag = True
+                 self.off_flag = True
+                 self.mode_counter = 0
 
 
     def step(self, a):
@@ -143,8 +139,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
         else:
             action = a
 
-        self.step_sim(action)
-        ob = self._get_obs()
+        ob = self.step_sim(np.multiply(self.max_accel, action))
 
         self.num_steps += 1
 
@@ -156,7 +151,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
         goal_scored, net_scored = self._check_goal_scored()
     
         #Set termination
-        terminated = goal_scored or self.num_steps > 200
+        terminated = goal_scored or self.num_steps > self.max_steps
 
         #TODO determine if truncated condition is needed
         truncated = False
@@ -169,9 +164,6 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                 term_reason += " on opponent" if net_scored == 1 else " on agent"
 
             info["termination_reason"] = term_reason
-
-        #Set agent side flag
-        self.agent_side_flag = self.data.qpos[0] < 0
             
         #TODO determine if truncated condition is needed
         truncated = False
@@ -184,22 +176,30 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     
     def reset_model(self):
         self.num_steps = 0
-        if self.train_mode == 0:
-            return self.reset_def()
-        elif self.train_mode == 1:
+        if self.get_next_mode() == "off":
             return self.reset_off()
         else:
-            if self.def_flag:
-                self.def_flag = False
-                return self.reset_def()
-            else:
-                self.def_flag = True
-                return self.reset_off()
+            return self.reset_def()
         
+    def get_next_mode(self):
+        if self.off_def_ratio[0] == 0:
+            return "def"
+        elif self.off_def_ratio[1] == 0:
+            return "off"
+        else:
+            self.mode_counter += 1
+            if self.off_flag:
+                if self.mode_counter >= self.off_def_ratio[0]:
+                    self.mode_counter = 0
+                    self.off_flag = False
+                return "off"
+            else:
+                if self.mode_counter >= self.off_def_ratio[1]:
+                    self.mode_counter = 0
+                    self.off_flag = True
+                return "def"
     
     def reset_def(self):
-        self.agent_side_flag = False
-
         #Spawn puck and agent within desired box
         temp_obs = self.spawn_in_box(self.m1_box_def, self.p_box_def, [(0,0), (0,0)])
         
@@ -227,8 +227,6 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
         return self.set_custom_state(pos,vel)
     
     def reset_off(self):
-        self.agent_side_flag = True
-
         # Spawn puck and agent within desired box
         return self.spawn_in_box(self.m1_box_off, self.p_box_off, self.m2_box_off)
  
@@ -270,7 +268,9 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
         rew += 0.001 * self.data.qpos[0] / self.goal_dist * self.max_reward
 
         #Reward based on x vel of puck when crossing middle
-        if self.agent_side_flag and self.data.qpos[0] >= 0:
-            rew += 5 * self.data.qvel[0] / self.goal_dist * self.max_reward
+        if abs(self.data.qpos[0] / self.goal_dist) < 0.05 and self.data.qvel[0] > 0:
+            angle_factor = 0.25
+            vel_factor = self.data.qvel[0] + angle_factor * abs(self.data.qvel[1])
+            rew += 0.5 * vel_factor / self.goal_dist * self.max_reward
 
         return rew
