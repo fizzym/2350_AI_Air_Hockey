@@ -5,3 +5,4 @@ from air_hockey_gym.envs.single_mallet_shooting_v0_discrete import SingleMalletS
 from air_hockey_gym.envs.air_hockey_base_class_v0 import AirHockeyBaseClass   
 from air_hockey_gym.envs.single_mallet_shooting_v1_discrete import SingleMalletShootDiscreteEnvV1
 from air_hockey_gym.envs.single_mallet_shooting_v2 import SingleMalletShootEnvV2
+from air_hockey_gym.envs.single_mallet_alternating_v0 import SingleMalletAlternatingEnv

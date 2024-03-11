@@ -5,7 +5,7 @@ agent_info:
   load_path: null #Path of previous agent save file, if starting from previously trained agent
 
 env_info:
-  env_name: 'single_mallet_shooting_v1_discrete'
+  env_name: 'single_mallet_alternating_v0'
 
 test_info:
   #Overrides individual render modes for validation tests. Set as 'None' to use mode in individual configs

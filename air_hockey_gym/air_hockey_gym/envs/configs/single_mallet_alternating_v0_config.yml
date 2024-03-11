@@ -1,0 +1,26 @@
+---
+class_name: 'SingleMalletAlternatingEnv'
+
+init_params:
+  max_reward: 1
+  train_mode: 2
+  render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'
+  mal1_box_def:
+  - [-0.8, 0]
+  - [-0.8, 0]
+  mal1_box_off:
+  - [-0.8, 0]
+  - [-0.8, 0]
+  puck_box_def:
+  - [0.4, 0]
+  - [0.4, 0]
+  puck_box_off:
+  - [-0.4, 0]
+  - [-0.4, 0]
+  mal2_puck_dist_range: [0.25, 0.25]
+  mal2_vel_range: [1, 1]
+  mal2_box_off:
+  - [0.9, 0.4]
+  - [0.9, 0.4]
+  max_accel: 5
+  discrete_actions: True
