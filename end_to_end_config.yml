@@ -13,3 +13,5 @@ test_info:
   test_names: 
     - "basic_defence_val_test_v0"
     - "basic_offence_val_test_v0"
+    - "adv_defence_val_test_v0"
+    - "adv_offence_val_test_v0"

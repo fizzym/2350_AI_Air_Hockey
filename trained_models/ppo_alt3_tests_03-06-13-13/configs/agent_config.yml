@@ -1,0 +1,7 @@
+class_name: PPO_Agent
+init_params:
+  _: 0
+train_params:
+  batch_size: 64
+  max_batches: 5000
+  max_rew: 1

@@ -14,16 +14,18 @@ class PPO_Agent(RL_Agent):
 
     """
 
-    def __init__(self, filepath: Union[str, None] = None, **kwargs):
+    def __init__(self, filepath: Union[str, None] = None, deterministic_predict = False, **kwargs):
         """Initializes the desired agent with specified arguments.
 
         Args:
             filepath:  Path for loading previously trained agent. If not specified agent will
                         start in default state
+            deterministic_predict: Flag to choose whether predictions should be deterministic
         """
 
         self._net = None
         self.action_space = Discrete(9)
+        self.det_predict = deterministic_predict
 
         if filepath:
             self._net = PPO.load(filepath)
@@ -50,7 +52,14 @@ class PPO_Agent(RL_Agent):
 
         callback = CallbackList([eval_callback, callback_max_episodes])
 
-        self._net = PPO(MlpPolicy, train_env, batch_size=batch_size, verbose=1, tensorboard_log=log_path)
+        if not self._net:
+            self._net = PPO(MlpPolicy, train_env, batch_size=batch_size, verbose=1, tensorboard_log=log_path)
+        else:
+            self._net.set_env(train_env)
+            self._net.tensorboard_log = log_path
+            self._net.batch_size = batch_size
+
+            
         self._net.learn(total_timesteps=(200*max_batches), tb_log_name='', callback=callback)
 
         
@@ -81,6 +90,7 @@ class PPO_Agent(RL_Agent):
         """Given an observation, output an action as predicted by this agent.
 
         Does not do any training when called, simply predicts off agents current state.
+        Prediction is deterministic or not based on constructor argument
 
         Args:
             obs: Observation of current environment state. 
@@ -93,7 +103,7 @@ class PPO_Agent(RL_Agent):
         """
 
         if self._net:
-            action, _states = self._net.predict(obs, deterministic=True)
+            action, _states = self._net.predict(obs, deterministic=self.det_predict)
             return action
         else:
             return self.action_space.sample()

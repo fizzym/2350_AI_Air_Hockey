@@ -1,0 +1,21 @@
+class_name: SingleMalletShootEnvV2
+init_params:
+  discrete_actions: true
+  mal1_box:
+  - - -0.95
+    - 0.45
+  - - -0.05
+    - -0.45
+  mal2_box:
+  - - 0.05
+    - 0.45
+  - - 0.95
+    - -0.45
+  max_accel: 5
+  max_reward: 1
+  puck_box:
+  - - -0.95
+    - 0.45
+  - - -0.05
+    - -0.45
+  render_mode: rgb_array

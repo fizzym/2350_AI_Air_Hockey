@@ -32,8 +32,9 @@ class AdvOffenceValTest(ValidationTest):
         with open("agent_validation/data/" + data_name, "rb") as file:
             testing_data = pickle.load(file)
 
+        num_attempts = len(testing_data)
         num_goals = 0
-        for k in range(len(testing_data)):
+        for k in range(num_attempts):
 
             #Grab data for current episode and reset environment to recorded ICs
             obs = env.set_custom_state(testing_data[k], np.zeros((6,1)))
@@ -54,8 +55,8 @@ class AdvOffenceValTest(ValidationTest):
                     env.reset()
             
             
-
-        tb.add_scalar("Advanced Offence Test - Goals Scored", num_goals, 0)
-        print("Agent scored", num_goals, "times")          
+        missed_shots = num_attempts - num_goals
+        tb.add_scalar("Advanced Offence Test - Missed Shots (" + str(num_attempts) + " Attempts)", missed_shots, 0)
+        print("Agent missed", missed_shots, "shots out of", num_attempts, "attempts")          
 
         tb.close()

@@ -54,9 +54,9 @@ class BasicOffenceValTest(ValidationTest):
                         #Reset model so step counter is also reset
                         env.reset()
             
-            tb.add_scalar("Basic Offensive Test - Goals Scored", num_goals, k)
+            missed_shots = NUM_EPISODES - num_goals
 
-
-            print("Agent scored", num_goals, "goals from puck", ic_map[k])          
+            tb.add_scalar("Basic Offensive Test - Missed Shots (" + str(NUM_EPISODES) + " Attempts)", missed_shots, k)
+            print("Agent missed", missed_shots, "shots out of", NUM_EPISODES, "attempts from puck", ic_map[k])          
 
         tb.close()

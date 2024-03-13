@@ -5,6 +5,7 @@
 class_name: 'PPO_Agent'
 
 init_params:
+  deterministic_predict : False
   _: 0
 
 train_params:

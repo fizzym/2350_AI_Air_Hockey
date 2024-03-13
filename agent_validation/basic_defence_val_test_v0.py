@@ -5,7 +5,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 #Define map which translates IC used to text for printout
 ic_map = {0: "straight shots", 1 : "angled shots from left side (from agent's perspective)", 2: "angled shots from right side (from agent's perspective)"}
-
+NUM_EPISODES = 100
 class DefenceValTest(ValidationTest):
     
     def __init__(self, **kwargs):
@@ -36,7 +36,7 @@ class DefenceValTest(ValidationTest):
             vel = self.vel_ICs[k]
             num_goals = 0
 
-            for i in range(100):
+            for i in range(NUM_EPISODES):
                 obs = env.set_custom_state(pos, vel)
 
                 terminated = False
@@ -52,9 +52,9 @@ class DefenceValTest(ValidationTest):
                         #Reset model so step counter is also reset
                         env.reset()
             
-            tb.add_scalar("Basic Defence Test - Goals Scored On", num_goals, k)
+            tb.add_scalar("Basic Defence Test - Goals Scored On (" + str(NUM_EPISODES) + " Attempts)", num_goals, k)
 
 
-            print("Agent was scored on", num_goals, "times via", ic_map[k])          
+            print("Agent was scored on", num_goals, "times out of", NUM_EPISODES,  "via", ic_map[k])          
 
         tb.close()

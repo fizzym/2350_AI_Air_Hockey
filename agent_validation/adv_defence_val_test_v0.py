@@ -79,7 +79,7 @@ class AdvDefenceValTest(ValidationTest):
                     break
             
             
-        tb_string = "Advanced Defence Test - Goals Scored On Agent (" + str(num_eps) + " attempts)"
+        tb_string = "Advanced Defence Test - Goals Scored On Agent (" + str(num_eps) + " Attempts)"
         tb.add_scalar(tb_string, num_goals, 0)
         print("Agent was scored on", num_goals, "times out of", len(testing_data), "attempts")          
 
