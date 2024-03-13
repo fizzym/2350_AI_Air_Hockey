@@ -230,7 +230,45 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     def reset_off(self):
         # Spawn puck and agent within desired box
         return self.spawn_in_box(self.m1_box_off, self.p_box_off, self.m2_box_off)
- 
+
+    def reset_bounce_def(self, bounce_top):
+        """
+
+        Args:
+            bounce_top: Bool to pick which edge to bounce off of (based off default camera position)
+        """
+        #Spawn puck and agent within desired box
+        temp_obs = self.spawn_in_box(self.m1_box_def, self.p_box_def, [(0,0), (0,0)])
+
+        #Pick out coordinates
+        puck_x = temp_obs[0]
+        puck_y = temp_obs[1]
+
+        m1_x = temp_obs[4]
+        m1_y = temp_obs[5]
+
+        #Position of goal reflected about bounce edge
+        proj_goal_pos = np.array([-self.goal_dist, 1])
+        #Flip y coord if bouncing off bottom edge
+        if not bounce_top:
+            proj_goal_pos[1] = -proj_goal_pos[1]
+
+        #Vector from puck position to reflected goal 
+        bounce_vec = proj_goal_pos - temp_obs[0:2]
+        
+        #Pick mallet 2 velocity
+        m2_vel_mag = unif(self.m2_vel[0], self.m2_vel[1])
+        mal2_vel = m2_vel_mag * bounce_vec / np.linalg.norm(bounce_vec)
+
+        #Pick distance mallet 2 starts behind puck
+        m2_puck_dist = unif(self.m2_puck_dist[0], self.m2_puck_dist[1])
+        m2_pos = temp_obs[0:2] - m2_puck_dist * (bounce_vec / np.linalg.norm(bounce_vec))
+
+        pos = [puck_x, puck_y, m1_x, m1_y, m2_pos[0], m2_pos[1]]
+        vel = [0,0,0,0, mal2_vel[0],mal2_vel[1]]
+
+        return self.set_custom_state(pos,vel) 
+
  	#@param - obs Current observation of the table environment
  	#@returns double Reward for on the current environment state
     def _get_rew(self, obs):
