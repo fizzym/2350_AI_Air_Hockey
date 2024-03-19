@@ -66,6 +66,9 @@ class AirHockeyBaseClass(MujocoEnv):
         self.goal_dist = 1.0
         self.goal_width = 0.13
 
+        #Width of table
+        self.table_width = 0.5
+
         #Define observation space
         observation_space = Box(low=-np.inf, high=np.inf, shape=(12,), dtype=np.float64)
 
