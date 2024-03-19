@@ -3,7 +3,8 @@ class_name: 'SingleMalletAlternatingEnv'
 
 init_params:
   max_reward: 1
-  train_mode: 2
+  off_def_ratio: [1,1]
+  max_steps: 200
   render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'
   mal1_box_def:
   - [-0.8, 0]
