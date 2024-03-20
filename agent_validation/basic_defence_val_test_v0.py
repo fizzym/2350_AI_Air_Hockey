@@ -1,6 +1,6 @@
 from agent_validation.val_test import ValidationTest
 from agents.rl_agent import RL_Agent
-from air_hockey_gym.envs.single_mallet_blocking_discrete_v2 import SingleMalletBlockDiscreteEnv
+from air_hockey_gym.envs.single_mallet_blocking_v3 import SingleMalletBlockDiscreteEnv
 from torch.utils.tensorboard import SummaryWriter 
 
 #Define map which translates IC used to text for printout
@@ -18,17 +18,17 @@ class DefenceValTest(ValidationTest):
         self.vel_ICs =  [[0, 0, 0, 0, -1, 0], [0, 0, 0, 0, -0.9684, -0.1644], [0, 0, 0, 0, -0.9684, 0.1644]]
 
 
-    def test_agent(self, agent : RL_Agent, log_path : str, render_mode, **kwargs):
+    def test_agent(self, agent : RL_Agent, log_path : str, render_mode, accel_mag = 1.0, **kwargs):
         """Perform desired test. Saves relevant statistics using tensorboard to log_path.
 
         Args:
             agent: The agent to test.
             log_path: Directory to save test logs to.
             render_mode: How to render environment used during testing. Options are 'human', 'rgb_array', 'depth_array' 
-
+             accel_mag: The magnitude of acceleration of the agent mallet
         """
 
-        env = SingleMalletBlockDiscreteEnv(render_mode = render_mode)
+        env = SingleMalletBlockDiscreteEnv(render_mode = render_mode, accel_mag = accel_mag)
         tb = SummaryWriter(log_path)
         
         for k in range(len(self.pos_ICs)):

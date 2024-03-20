@@ -7,6 +7,7 @@ test_params:
   render_mode: "rgb_array" #Options are 'human', 'rgb_array', 'depth_array'
   discrete_actions: True
   data_name: "adv_def_test_data_50_eps_02-02-15-43.pkl"
+  accel_mag: 1.0
   #Data options:
   # - adv_def_test_data_50_eps_02-02-15-43.pkl - Current main testing data.
   #   50 goals with variety of shot styles (slow, fast, bounce, etc.)

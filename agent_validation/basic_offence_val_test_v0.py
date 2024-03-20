@@ -20,17 +20,19 @@ class BasicOffenceValTest(ValidationTest):
         self.vel_ICs =  [[0,0,0,0,0,0], [0,0,0,0,0,0], [0,0,0,0,0,0]]
 
 
-    def test_agent(self, agent : RL_Agent, log_path : str, render_mode, discrete_actions = True, **kwargs):
+    def test_agent(self, agent : RL_Agent, log_path : str, render_mode, discrete_actions = True, accel_mag = 1.0, **kwargs):
         """Perform desired test. Saves relevant statistics using tensorboard to log_path.
 
         Args:
             agent: The agent to test.
             log_path: Directory to save test logs to.
             render_mode: How to render environment used during testing. Options are 'human', 'rgb_array', 'depth_array' 
-
+            accel_mag: The magnitude of acceleration of the agent mallet
         """
 
-        env = SingleMalletShootEnvV2(render_mode = render_mode, discrete_actions = discrete_actions)
+        env = SingleMalletShootEnvV2(render_mode = render_mode, 
+                                    discrete_actions = discrete_actions,
+                                    accel_mag= accel_mag)
         tb = SummaryWriter(log_path)
         
         for k in range(len(self.pos_ICs)):

@@ -6,3 +6,4 @@ class_name: "BasicOffenceValTest"
 test_params: 
   render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'
   discrete_actions: True
+  accel_mag: 1.0
