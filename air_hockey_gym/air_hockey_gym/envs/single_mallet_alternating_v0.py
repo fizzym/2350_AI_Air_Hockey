@@ -2,6 +2,7 @@ from air_hockey_gym.envs.air_hockey_base_class_v0 import AirHockeyBaseClass
 
 import numpy as np
 from numpy.random import uniform as unif
+from enum import Enum
 
 PUCK_STATIONARY_THRESH = 1e-4
 MAX_VEL = 3.0
@@ -10,6 +11,11 @@ DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": 0,
     "distance": 2.4,
 }
+
+class ShotType(Enum):
+    STRAIGHT = 0
+    BOUNCE_TOP = 1
+    BOUNCE_BOTTOM = 2
 
 class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     """
@@ -71,7 +77,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     }
 
     
-    def __init__(self, max_reward=1, off_def_ratio=[1,1], max_steps=200,
+    def __init__(self, max_reward=1, off_def_ratio=[1,1], straight_bounce_ratio=[1,1], max_steps=200,
                  mal1_box_def=[(-0.8,0),(-0.8,0)], mal1_box_off=[(-0.8,0),(-0.8,0)],
                  puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)],
                  mal2_puck_dist_range=[0.25,0.25], mal2_vel_range=[1,1], mal2_box_off=[(0.9,0.4),(0.9,0.4)],
@@ -83,6 +89,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                  Inputs:
                     max_reward: Maximum reward to return. All rewards are given as percent of this value.
                     off_def_ratio: Ratio of offensive to defensive simulations to run. Runs only a single type if one element is 0.
+                    straight_bounce_ratio: Ratio of straight to bounce shots during defensive training.
                     max_steps: Maximum simulation steps to wait before forcefully terminating.
                     mal1_box_def: Bounding box which mallet1 will spawn uniformly in. (DEFENCE)
                             [(x1,y1),(x2,y2)] Where (x1,y1) are coordinates of top left corner of box, 
@@ -104,6 +111,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
 
                  #Store parameters for use in reset function
                  self.off_def_ratio = off_def_ratio
+                 self.straight_bounce_ratio = straight_bounce_ratio
                  self.m1_box_def = mal1_box_def
                  self.m1_box_off = mal1_box_off
                  self.p_box_def = puck_box_def
@@ -119,6 +127,10 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                  #Create alternating def/off flag
                  self.off_flag = True
                  self.mode_counter = 0
+                 #Create bounce cycle counter
+                 self.bounce_flag = False
+                 self.bounce_counter = 0
+                 self.bounce_top_flag = True
 
 
     def step(self, a):
@@ -201,41 +213,43 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                 return "def"
     
     def reset_def(self):
-        #Spawn puck and agent within desired box
-        temp_obs = self.spawn_in_box(self.m1_box_def, self.p_box_def, [(0,0), (0,0)])
-        
-        #Pick out coordinates
-        puck_x = temp_obs[0]
-        puck_y = temp_obs[1]
-
-        m1_x = temp_obs[4]
-        m1_y = temp_obs[5]
-
-        #Pick mallet 2 start location behind puck
-        m2_dist = unif(self.m2_puck_dist[0], self.m2_puck_dist[1])
-        theta = np.arctan(puck_y/(puck_x + 1))
-        m2_x = puck_x + np.cos(theta) * m2_dist
-        m2_y = puck_y + np.sin(theta) * m2_dist
-
-        #Pick mallet 2 initial velocity
-        m2_vel = - unif(self.m2_vel[0], self.m2_vel[1])
-        m2_vel_x = m2_vel * np.cos(theta)
-        m2_vel_y = m2_vel * np.sin(theta)
-
-        pos = [puck_x, puck_y, m1_x, m1_y, m2_x, m2_y]
-        vel = [0,0,0,0,m2_vel_x,m2_vel_y]
-
-        return self.set_custom_state(pos,vel)
+        return self.reset_bounce_def(self.get_next_shot_mode())
     
     def reset_off(self):
         # Spawn puck and agent within desired box
         return self.spawn_in_box(self.m1_box_off, self.p_box_off, self.m2_box_off)
+    
+    def get_next_shot_mode(self):
+        if self.straight_bounce_ratio[0] == 0:
+            return self.get_next_bounce_mode()
+        elif self.straight_bounce_ratio[1] == 0:
+            return ShotType.STRAIGHT
+        else:
+            self.bounce_counter += 1
+            if self.bounce_flag:
+                if self.bounce_counter >= self.straight_bounce_ratio[1]:
+                    self.bounce_counter = 0
+                    self.bounce_flag = False
+                return self.get_next_bounce_mode()
+            else:
+                if self.bounce_counter >= self.straight_bounce_ratio[0]:
+                    self.bounce_counter = 0
+                    self.bounce_flag = True
+                return ShotType.STRAIGHT
+            
+    def get_next_bounce_mode(self):
+        if self.bounce_top_flag:
+            self.bounce_top_flag = False
+            return ShotType.BOUNCE_TOP
+        else:
+            self.bounce_top_flag = True
+            return ShotType.BOUNCE_BOTTOM
 
-    def reset_bounce_def(self, bounce_top):
+    def reset_bounce_def(self, shot_type: ShotType = ShotType.STRAIGHT):
         """
 
         Args:
-            bounce_top: Bool to pick which edge to bounce off of (based off default camera position)
+            shot_type: Enum class with 3 options (STRAIGHT, BOUNCE_TOP, BOUNCE_BOTTOM)
         """
         #Spawn puck and agent within desired box
         temp_obs = self.spawn_in_box(self.m1_box_def, self.p_box_def, [(0,0), (0,0)])
@@ -247,11 +261,14 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
         m1_x = temp_obs[4]
         m1_y = temp_obs[5]
 
-        #Position of goal reflected about bounce edge
-        proj_goal_pos = np.array([-self.goal_dist, 1])
+        #Position of goal is regular at bounce_mode == 0
+        proj_goal_pos = np.array([-self.goal_dist, 0])
+
         #Flip y coord if bouncing off bottom edge
-        if not bounce_top:
-            proj_goal_pos[1] = -proj_goal_pos[1]
+        if shot_type == ShotType.BOUNCE_TOP:
+            proj_goal_pos[1] = 2 * self.table_width
+        elif shot_type == ShotType.BOUNCE_BOTTOM:
+            proj_goal_pos[1] = - 2 * self.table_width
 
         #Vector from puck position to reflected goal 
         bounce_vec = proj_goal_pos - temp_obs[0:2]

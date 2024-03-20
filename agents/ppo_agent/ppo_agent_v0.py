@@ -30,7 +30,7 @@ class PPO_Agent(RL_Agent):
         if filepath:
             self._net = PPO.load(filepath)
 
-    def train_agent(self, train_env : Env, log_path : str, batch_size : int = 64, max_rew = 0, max_batches : int = 500, **kwargs):
+    def train_agent(self, train_env : Env, log_path : str, batch_size : int = 64, max_rew = 10, max_batches : int = 5000, **kwargs):
         """Trains agent on specified training environment using specified parameters.
 
         Args:
@@ -60,7 +60,7 @@ class PPO_Agent(RL_Agent):
             self._net.batch_size = batch_size
 
             
-        self._net.learn(total_timesteps=(200*max_batches), tb_log_name='', callback=callback)
+        self._net.learn(total_timesteps=(1000*max_batches), tb_log_name='', callback=callback)
 
         
     def save_agent(self, dir_path: str):
