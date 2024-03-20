@@ -94,7 +94,7 @@ class AirHockeyBaseClass(MujocoEnv):
         if discrete_actions:
             #Set up discrete actions
             #Initialize 0 vector and 8 allowable directions
-            self.actions = accel_mag * [[0.0,0.0],
+            self.actions = accel_mag * np.array([[0.0,0.0],
                             [1.0,0.0],
                             [0.707,0.707],
                             [0.0,1.0],
@@ -102,7 +102,7 @@ class AirHockeyBaseClass(MujocoEnv):
                             [-1.0,0.0],
                             [-0.707,-0.707],
                             [0.0,-1.0],
-                            [0.707,-0.707]]
+                            [0.707,-0.707]])
             self.action_space = Discrete(len(self.actions))
 
         #Modify action space for two agents

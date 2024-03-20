@@ -1,6 +1,6 @@
 from agent_validation.val_test import ValidationTest
 from agents.rl_agent import RL_Agent
-from air_hockey_gym.envs.single_mallet_blocking_v3 import SingleMalletBlockDiscreteEnv
+from air_hockey_gym.envs.single_mallet_blocking_v3 import SingleMalletBlockEnv
 from torch.utils.tensorboard import SummaryWriter 
 
 #Define map which translates IC used to text for printout
@@ -28,7 +28,7 @@ class DefenceValTest(ValidationTest):
              accel_mag: The magnitude of acceleration of the agent mallet
         """
 
-        env = SingleMalletBlockDiscreteEnv(render_mode = render_mode, accel_mag = accel_mag)
+        env = SingleMalletBlockEnv(render_mode = render_mode, accel_mag = accel_mag)
         tb = SummaryWriter(log_path)
         
         for k in range(len(self.pos_ICs)):

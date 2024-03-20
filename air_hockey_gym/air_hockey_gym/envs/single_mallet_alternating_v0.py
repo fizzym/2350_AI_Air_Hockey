@@ -81,7 +81,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                  mal1_box_def=[(-0.8,0),(-0.8,0)], mal1_box_off=[(-0.8,0),(-0.8,0)],
                  puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)],
                  mal2_puck_dist_range=[0.25,0.25], mal2_vel_range=[1,1], mal2_box_off=[(0.9,0.4),(0.9,0.4)],
-                 accel_mag=1, discrete_actions = True, **kwargs):
+                 accel_mag=1.0, discrete_actions = True, **kwargs):
                  """
                  All coordinates are in world coordinate frame (center of table, 
                  positive x towards opponent goal)

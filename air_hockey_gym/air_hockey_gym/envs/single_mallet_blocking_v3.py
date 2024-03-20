@@ -82,7 +82,7 @@ class SingleMalletBlockEnv(AirHockeyBaseClass):
     
     def __init__(self, max_reward=1, puck_box=[(0.10,0.25), (0.55,-0.25)], mal2_puck_dist_range = [0.2,0.3],
                  mal2_vel_range = [0.5,2], mal1_box= [(-.90,0.15),(-0.7,-0.15)],
-                 accel_mag=1, discrete_actions = True,  **kwargs):
+                 accel_mag=1.0, discrete_actions = True,  **kwargs):
                  """
                  All coordinates are in world coordinate frame (center of table, 
                  positive x towards opponent goal)

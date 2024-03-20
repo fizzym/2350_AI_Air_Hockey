@@ -16,7 +16,7 @@ class AdvDefenceValTest(ValidationTest):
         pass
 
     def test_agent(self, agent : RL_Agent, log_path : str, render_mode, data_name : str,
-                   discrete_actions = True, accel_mag = 1.0 **kwargs):
+                   discrete_actions = True, accel_mag = 1.0, **kwargs):
         """Perform desired test. Saves relevant statistics using tensorboard to log_path.
 
         Args:

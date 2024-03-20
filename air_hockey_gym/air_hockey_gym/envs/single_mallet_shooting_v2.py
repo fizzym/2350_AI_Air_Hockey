@@ -98,7 +98,7 @@ class SingleMalletShootEnvV2(AirHockeyBaseClass):
     #Note all below distance values are in meters
     
     def __init__(self, max_reward=1, puck_box=[(-0.5,0), (-0.5,0)], mal1_box= [(-0.9,0),(-0.9,0)], mal2_box= [(0.05,0.45),(0.95,-0.45)],
-                 accel_mag=1, discrete_actions = True, **kwargs):
+                 accel_mag=1.0, discrete_actions = True, **kwargs):
         """
         All coordinates are in world coordinate frame (center of table, 
         positive x towards opponent goal)
