@@ -80,7 +80,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     
     def __init__(self, max_reward=1, off_def_ratio=[1,1], straight_bounce_ratio=[1,1], max_steps=200,
                  mal1_box_def=[(-0.8,0),(-0.8,0)], mal1_box_off=[(-0.8,0),(-0.8,0)],
-                 puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)], puck_drift_vel_range=[0,0.2],
+                 puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)], puck_drift_vel_range=[0,0],
                  mal2_puck_dist_range=[0.25,0.25], mal2_vel_range=[1,1], mal2_box_off=[(0.9,0.4),(0.9,0.4)],
                  max_accel=5, discrete_actions = True, **kwargs):
                  """
