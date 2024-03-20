@@ -80,7 +80,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     
     def __init__(self, max_reward=1, off_def_ratio=[1,1], straight_bounce_ratio=[1,1], max_steps=200,
                  mal1_box_def=[(-0.8,0),(-0.8,0)], mal1_box_off=[(-0.8,0),(-0.8,0)],
-                 puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)],
+                 puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)], puck_drift_vel_range=[0,0.2],
                  mal2_puck_dist_range=[0.25,0.25], mal2_vel_range=[1,1], mal2_box_off=[(0.9,0.4),(0.9,0.4)],
                  max_accel=5, discrete_actions = True, **kwargs):
                  """
@@ -99,6 +99,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                     mal1_box_off: Bounding box which mallet1 will spawn uniformly in. (OFFENCE)
                     puck_box_def: Bounding box which puck will spawn uniformly in. (DEFENCE)
                     puck_box_off: Bounding box which puck will spawn uniformly in. (OFFENCE)
+                    puck_drift_vel_range: Magnitude range of drift velocities for puck. (OFFENCE)
                     mal2_puck_dist_range: Absolute value of range of distances between mallet 2 and the puck. (DEFENCE)
                     mal2_vel: Absolute value of range of velocites mallet 2 can spawn with. (DEFENCE)
                     mal2_box_off: Bounding box which mallet2 will spawn uniformly in. (OFFENCE)
@@ -118,6 +119,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                  self.m1_box_off = mal1_box_off
                  self.p_box_def = puck_box_def
                  self.p_box_off = puck_box_off
+                 self.p_drift_vel = puck_drift_vel_range
                  self.m2_puck_dist = mal2_puck_dist_range
                  self.m2_vel = mal2_vel_range
                  self.m2_box_off = mal2_box_off
@@ -233,7 +235,27 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
         """
 
         # Spawn puck and agent within desired box
-        return self.spawn_in_box(self.m1_box_off, self.p_box_off, self.m2_box_off)
+        temp_obs = self.spawn_in_box(self.m1_box_off, self.p_box_off, self.m2_box_off)
+
+        # Pick out coordinates
+        puck_x = temp_obs[0]
+        puck_y = temp_obs[1]
+
+        m1_x = temp_obs[4]
+        m1_y = temp_obs[5]
+
+        m2_x = temp_obs[8]
+        m2_y = temp_obs[9]
+
+        # Selects random drift velocity within range and random direction between 0 and 2pi
+        p_vel_mag = unif(self.p_drift_vel[0], self.p_drift_vel[1])
+        p_vel_angle = unif(0, 2 * np.pi)
+        p_vel = p_vel_mag * np.array([np.cos(p_vel_angle), np.sin(p_vel_angle)])
+        
+        pos = [puck_x, puck_y, m1_x, m1_y, m2_x, m2_y]
+        vel = [p_vel[0],p_vel[1],0,0,0,0]
+
+        return self.set_custom_state(pos,vel) 
     
     def get_next_shot_mode(self):
         """
@@ -261,7 +283,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     def get_next_bounce_mode(self):
         """Alternates between bounce shots from the top and bounce shots from the bottom
         """
-        
+
         if self.bounce_top_flag:
             self.bounce_top_flag = False
             return ShotType.BOUNCE_TOP
