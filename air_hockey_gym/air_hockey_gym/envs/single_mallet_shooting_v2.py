@@ -116,7 +116,6 @@ class SingleMalletShootEnvV2(AirHockeyBaseClass):
 
         super().__init__(
             max_reward=max_reward,
-            use_both_agents=False,
             max_accel=max_accel,
             discrete_actions=discrete_actions,
             **kwargs,

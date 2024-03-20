@@ -100,7 +100,7 @@ class SingleMalletBlockEnv(AirHockeyBaseClass):
                               Will be continous if False, discrete if True
         
                  """
-                 super().__init__(max_reward=max_reward, use_both_agents=False, max_accel = max_accel,
+                 super().__init__(max_reward=max_reward, max_accel = max_accel,
                                   discrete_actions= discrete_actions, **kwargs)
        
 
