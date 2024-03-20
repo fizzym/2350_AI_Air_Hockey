@@ -44,6 +44,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
     If environment is discrete, should be integer representing which direction to move in. 
 
 	### Reward
+    DISCLAIMER: The total accumulated reward is not capped! The max_rew parameter only determines the caling factor used for the rewards.
 	
 	Value:
 	All rewards are given in terms of percent of max_reward argument (default 10)
@@ -87,7 +88,8 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                  positive x towards opponent goal)
 
                  Inputs:
-                    max_reward: Maximum reward to return. All rewards are given as percent of this value.
+                    max_reward: Maximum reward to return PER TIME STEP. All rewards are given as percent of this value.
+                            Note that agents can accumulate more than this during a single episode.
                     off_def_ratio: Ratio of offensive to defensive simulations to run. Runs only a single type if one element is 0.
                     straight_bounce_ratio: Ratio of straight to bounce shots during defensive training.
                     max_steps: Maximum simulation steps to wait before forcefully terminating.
@@ -188,6 +190,9 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
 
     
     def reset_model(self):
+        """Resets the environment for the next episode
+        """
+
         self.num_steps = 0
         if self.get_next_mode() == "off":
             return self.reset_off()
@@ -195,6 +200,11 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
             return self.reset_def()
         
     def get_next_mode(self):
+        """
+            Determines if next episode should be offensive or defensive according to off_def_ratio.
+            If either array element is 0, only selects available mode for whole training run.
+        """
+
         if self.off_def_ratio[0] == 0:
             return "def"
         elif self.off_def_ratio[1] == 0:
@@ -213,13 +223,24 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                 return "def"
     
     def reset_def(self):
+        """Resets the environment for a defensive episode
+        """
+
         return self.reset_bounce_def(self.get_next_shot_mode())
     
     def reset_off(self):
+        """Resets the environment for an offensive episode
+        """
+
         # Spawn puck and agent within desired box
         return self.spawn_in_box(self.m1_box_off, self.p_box_off, self.m2_box_off)
     
     def get_next_shot_mode(self):
+        """
+            Determines if next defensive episode should initialize the opponent for a straight shot or bounce shot according to straight_bounce_ratio.
+            If either array element is 0, only selects available mode for whole training run.
+        """
+
         if self.straight_bounce_ratio[0] == 0:
             return self.get_next_bounce_mode()
         elif self.straight_bounce_ratio[1] == 0:
@@ -238,6 +259,9 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                 return ShotType.STRAIGHT
             
     def get_next_bounce_mode(self):
+        """Alternates between bounce shots from the top and bounce shots from the bottom
+        """
+        
         if self.bounce_top_flag:
             self.bounce_top_flag = False
             return ShotType.BOUNCE_TOP
