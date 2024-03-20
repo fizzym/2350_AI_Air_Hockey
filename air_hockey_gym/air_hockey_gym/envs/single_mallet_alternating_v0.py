@@ -81,7 +81,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                  mal1_box_def=[(-0.8,0),(-0.8,0)], mal1_box_off=[(-0.8,0),(-0.8,0)],
                  puck_box_def=[(0.4,0),(0.4,0)], puck_box_off=[(-0.4,0),(-0.4,0)],
                  mal2_puck_dist_range=[0.25,0.25], mal2_vel_range=[1,1], mal2_box_off=[(0.9,0.4),(0.9,0.4)],
-                 max_accel=5, discrete_actions = True, **kwargs):
+                 accel_mag=1, discrete_actions = True, **kwargs):
                  """
                  All coordinates are in world coordinate frame (center of table, 
                  positive x towards opponent goal)
@@ -100,12 +100,12 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
                     mal2_puck_dist_range: Absolute value of range of distances between mallet 2 and the puck. (DEFENCE)
                     mal2_vel: Absolute value of range of velocites mallet 2 can spawn with. (DEFENCE)
                     mal2_box_off: Bounding box which mallet2 will spawn uniformly in. (OFFENCE)
-                    max_accel: The max acceleration of the agent mallet
+                    accel_mag: The magnitude of acceleration of the agent mallet
                     discrete_actions: Flag to set if environment's action space should be discrete or continous.
                               Will be continous if False, discrete if True
         
                  """
-                 super().__init__(max_reward=max_reward, use_both_agents=False, max_accel=max_accel,
+                 super().__init__(max_reward=max_reward, use_both_agents=False, accel_mag=accel_mag,
                                   discrete_actions=discrete_actions, **kwargs)
        
 
@@ -152,7 +152,7 @@ class SingleMalletAlternatingEnv(AirHockeyBaseClass):
         else:
             action = a
 
-        ob = self.step_sim(np.multiply(self.max_accel, action))
+        ob = self.step_sim(action)
 
         self.num_steps += 1
 
