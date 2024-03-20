@@ -4,5 +4,6 @@
 class_name: "DefenceValTest"
 
 test_params: 
-  render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array' 
+  render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'
+  accel_mag: 1.0 
   

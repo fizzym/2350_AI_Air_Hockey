@@ -123,6 +123,9 @@ def get_test_classes_and_configs(test_info):
         #If a render mode is specified in end_to_end config, set all val test render modes to this value
         if test_info["render_mode"]:
             config_info["test_params"]["render_mode"] = test_info["render_mode"]
+        #If acceleration magnitude specified, apply this to all val tests
+        if test_info["accel_mag"]:
+            config_info["test_params"]["accel_mag"] = test_info["accel_mag"]
 
         #Get the env class 
         test_class = getattr(test_mod, config_info["class_name"])

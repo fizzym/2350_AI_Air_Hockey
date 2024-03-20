@@ -14,7 +14,7 @@ class AdvOffenceValTest(ValidationTest):
         pass
 
     def test_agent(self, agent : RL_Agent, log_path : str, render_mode, data_name : str,
-                   discrete_actions = True, **kwargs):
+                   discrete_actions = True, accel_mag=1.0, **kwargs):
         """Perform desired test. Saves relevant statistics using tensorboard to log_path.
 
         Args:
@@ -22,6 +22,7 @@ class AdvOffenceValTest(ValidationTest):
             log_path: Directory to save test logs to.
             render_mode: How to render environment used during testing. Options are 'human', 'rgb_array', 'depth_array' 
             data_name: Name of the recorded testing data to use. Should be in agent_validation/data directory
+            accel_mag: The magnitude of acceleration of the agent mallet
         """
 
         env = SingleMalletShootEnvV2(render_mode = render_mode, discrete_actions = discrete_actions)

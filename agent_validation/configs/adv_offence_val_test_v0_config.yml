@@ -7,6 +7,7 @@ test_params:
   render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'
   discrete_actions: True
   data_name: "adv_off_test_data_100_eps_01-27-20-53.pkl"
+  accel_mag: 1.0
 #Data options:
 # - adv_off_test_data_100_eps_01-27-20-53.pkl - Basic dataset with 100 randomized puck position ICs. Agent mallet
 #   spawns in front of its goal and opponent mallet spawns in corner.

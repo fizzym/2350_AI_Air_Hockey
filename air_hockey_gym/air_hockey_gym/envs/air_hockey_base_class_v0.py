@@ -46,7 +46,8 @@ class AirHockeyBaseClass(MujocoEnv):
         "render_fps": 25,
     }
 
-    def __init__(self, max_reward=10, use_both_agents = False, discrete_actions = False, max_accel = 5, **kwargs):
+    def __init__(self, max_reward=10, use_both_agents = False, discrete_actions = False, 
+                accel_mag = 1, **kwargs):
         """Initializes environment and underlying MuJoCo simulation
 
         Inputs:
@@ -55,7 +56,7 @@ class AirHockeyBaseClass(MujocoEnv):
             use_both_agents: Flag to set number of agents in environment. If False, only left mallet is used as agent.
             discrete_actions: Flag to set if environment's action space should be discrete or continous.
                               Will be continous if False, discrete if True
-            max_accel: The max acceleration if the action space is discrete
+            accel_mag: The magnitude of acceleration if action space is discrete
         """
 
         self.use_both_agents = use_both_agents
@@ -92,9 +93,8 @@ class AirHockeyBaseClass(MujocoEnv):
 
         if discrete_actions:
             #Set up discrete actions
-            self.max_accel = max_accel
             #Initialize 0 vector and 8 allowable directions
-            self.actions = [[0.0,0.0],
+            self.actions = accel_mag * np.array([[0.0,0.0],
                             [1.0,0.0],
                             [0.707,0.707],
                             [0.0,1.0],
@@ -102,7 +102,7 @@ class AirHockeyBaseClass(MujocoEnv):
                             [-1.0,0.0],
                             [-0.707,-0.707],
                             [0.0,-1.0],
-                            [0.707,-0.707]]
+                            [0.707,-0.707]])
             self.action_space = Discrete(len(self.actions))
 
         #Modify action space for two agents

@@ -82,7 +82,7 @@ class SingleMalletBlockEnv(AirHockeyBaseClass):
     
     def __init__(self, max_reward=1, puck_box=[(0.10,0.25), (0.55,-0.25)], mal2_puck_dist_range = [0.2,0.3],
                  mal2_vel_range = [0.5,2], mal1_box= [(-.90,0.15),(-0.7,-0.15)],
-                 max_accel=5, discrete_actions = True,  **kwargs):
+                 accel_mag=1.0, discrete_actions = True,  **kwargs):
                  """
                  All coordinates are in world coordinate frame (center of table, 
                  positive x towards opponent goal)
@@ -95,12 +95,12 @@ class SingleMalletBlockEnv(AirHockeyBaseClass):
                     mal2_puck_dist_range: Absolute value of range of distances between mallet 2 and the puck
                     mal2_vel: Absolute value of range of velocites mallet 2 can spawn with
                     mal1_box: Bounding box which mallet1 will spawn uniformly in. Same format as puck_box.
-                    max_accel: The max acceleration of the agent mallet
+                    accel_mag: The magnitude of acceleration of the agent mallet
                     discrete_actions: Flag to set if environment's action space should be discrete or continous.
                               Will be continous if False, discrete if True
         
                  """
-                 super().__init__(max_reward=max_reward, max_accel = max_accel,
+                 super().__init__(max_reward=max_reward, use_both_agents=False, accel_mag = accel_mag,
                                   discrete_actions= discrete_actions, **kwargs)
        
 

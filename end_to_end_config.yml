@@ -9,7 +9,8 @@ env_info:
 
 test_info:
   #Overrides individual render modes for validation tests. Set as 'None' to use mode in individual configs
-  render_mode: "rgb_array" 
+  render_mode: "human"
+  accel_mag: 1.0
   test_names: 
     - "basic_defence_val_test_v0"
     - "basic_offence_val_test_v0"

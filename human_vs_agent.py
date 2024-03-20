@@ -22,6 +22,7 @@ AGENT_VERSION = "v0"
 #Path to saved agent to load
 AGENT_PATH = "trained_models/ppo_offence.zip"
 DISCRETE_ACTIONS = True
+ACCEL_MAG = 1.0 #Magnitude of acceleration of agent (if discrete)
 AGENT_START_X = 0.4
 # Distance camera is above the table. Recommended to adjust so that table fills majority of screen
 # so that PID control is more intuitive
@@ -65,7 +66,8 @@ def transform(point):
 
 
 env = AirHockeyBaseClass(use_both_agents=True, discrete_actions=DISCRETE_ACTIONS,
-                         render_mode="human", default_camera_config=DEFAULT_CAMERA_CONFIG)
+                         render_mode="human", default_camera_config=DEFAULT_CAMERA_CONFIG,
+                         accel_mag=ACCEL_MAG)
 
 #Pack variables into dictionary to use utility function
 agent_info = {"agent_name" : AGENT_TYPE,
