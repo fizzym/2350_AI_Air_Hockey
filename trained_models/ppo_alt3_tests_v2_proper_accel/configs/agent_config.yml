@@ -4,5 +4,5 @@ init_params:
   deterministic_predict: false
 train_params:
   batch_size: 64
-  max_batches: 10000
+  max_batches: 5000
   max_rew: 10
