@@ -24,5 +24,5 @@ init_params:
   mal2_box_off:
   - [0.9, 0.4]
   - [0.9, 0.4]
-  accel_mag: 1
+  accel_mag: 1.0
   discrete_actions: True
