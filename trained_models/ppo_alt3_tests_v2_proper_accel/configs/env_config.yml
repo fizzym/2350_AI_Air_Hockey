@@ -1,0 +1,44 @@
+class_name: SingleMalletVsAgentEnv
+init_params:
+  agent_info:
+    agent_name: ppo_agent
+    load_path: /home/bradychurch/Desktop/459_ai_air_hockey_gym/trained_models/ppo_alt3.zip
+    version: v0
+  discrete_actions: true
+  mal1_box_def:
+  - - -0.9
+    - 0.2
+  - - -0.7
+    - -0.2
+  mal1_box_off:
+  - - -0.9
+    - 0.2
+  - - -0.7
+    - -0.2
+  mal2_box_def:
+  - - 0.7
+    - 0.3
+  - - 0.9
+    - -0.3
+  mal2_box_off:
+  - - 0.7
+    - 0.3
+  - - 0.9
+    - -0.3
+  max_accel: 5
+  max_reward: 1
+  max_steps: 200
+  off_def_ratio:
+  - 4
+  - 1
+  puck_box_def:
+  - - 0.2
+    - 0.25
+  - - 0.6
+    - -0.25
+  puck_box_off:
+  - - -0.6
+    - 0.25
+  - - -0.2
+    - -0.25
+  render_mode: rgb_array

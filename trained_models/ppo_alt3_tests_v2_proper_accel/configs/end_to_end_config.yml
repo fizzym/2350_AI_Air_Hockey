@@ -1,0 +1,13 @@
+agent_info:
+  agent_name: ppo_agent
+  load_path: null
+  version: v0
+env_info:
+  env_name: single_mallet_vs_agent_v0
+test_info:
+  render_mode: rgb_array
+  test_names:
+  - basic_defence_val_test_v0
+  - basic_offence_val_test_v0
+  - adv_defence_val_test_v0
+  - adv_offence_val_test_v0
