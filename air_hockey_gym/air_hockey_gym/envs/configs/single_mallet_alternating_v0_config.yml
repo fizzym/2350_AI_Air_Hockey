@@ -3,27 +3,27 @@ class_name: 'SingleMalletAlternatingEnv'
 
 init_params:
   max_reward: 1
-  off_def_ratio: [1,1]
-  straight_bounce_ratio: [1,1]
-  max_steps: 200
-  render_mode: "human" #Options are 'human', 'rgb_array', 'depth_array'
+  off_def_ratio: [4,1]
+  straight_bounce_ratio: [2,1]
+  max_steps: 70
+  render_mode: "rgb_array" #Options are 'human', 'rgb_array', 'depth_array'
   mal1_box_def:
-  - [-0.8, 0]
-  - [-0.8, 0]
+  - [-0.9, 0.4]
+  - [-0.3, -0.4]
   mal1_box_off:
-  - [-0.8, 0]
-  - [-0.8, 0]
+  - [-0.9, 0.4]
+  - [-0.3, -0.4]
   puck_box_def:
-  - [0.4, 0]
-  - [0.4, 0]
+  - [0.1, 0.3]
+  - [0.6, -0.3]
   puck_box_off:
-  - [-0.4, 0]
-  - [-0.4, 0]
-  puck_drift_vel_range: [0, 0]
-  mal2_puck_dist_range: [0.25, 0.25]
-  mal2_vel_range: [1, 1]
+  - [-0.7, 0.4]
+  - [-0.15, -0.4]
+  puck_drift_vel_range: [0, 0.15]
+  mal2_puck_dist_range: [0.1, 0.2]
+  mal2_vel_range: [1, 3]
   mal2_box_off:
-  - [0.9, 0.4]
-  - [0.9, 0.4]
-  accel_mag: 1.0
+  - [0.3, 0.4]
+  - [0.9, -0.4]
+  accel_mag: 3.0
   discrete_actions: True

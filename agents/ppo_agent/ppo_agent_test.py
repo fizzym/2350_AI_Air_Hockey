@@ -3,8 +3,8 @@ from stable_baselines3 import PPO
 from stable_baselines3.ppo import MlpPolicy
 from stable_baselines3.common.callbacks import CallbackList, EvalCallback, StopTrainingOnRewardThreshold, StopTrainingOnMaxEpisodes
 
-env = SingleMalletAlternatingEnv(off_def_ratio=[2,1], mal1_box_def=[(-0.9, 0.4), (-0.3, -0.4)], mal1_box_off=[(-0.9, 0.4), (-0.3, -0.4)],
-                                 puck_box_def=[(0.2, 0.25), (0.6, -0.25)], puck_box_off=[(-0.7, 0.4), (-0.2, -0.4)],
+env = SingleMalletAlternatingEnv(max_steps=100, accel_mag=5.0, off_def_ratio=[1,1], straight_bounce_ratio=[1,2], mal1_box_def=[(-0.9, 0.4), (-0.3, -0.4)], mal1_box_off=[(-0.9, 0.4), (-0.3, -0.4)],
+                                 puck_box_def=[(0.2, 0.25), (0.6, -0.25)], puck_box_off=[(-0.7, 0.4), (-0.2, -0.4)], puck_drift_vel_range=[0, 0.5],
                                  mal2_puck_dist_range=[0.2, 0.3], mal2_vel_range=[1, 2], mal2_box_off=[(0.3, 0.4), (0.9, -0.4)])
 
 callback_on_best = StopTrainingOnRewardThreshold(reward_threshold=20, verbose=1)
@@ -14,12 +14,12 @@ callback_max_episodes = StopTrainingOnMaxEpisodes(max_episodes=5000, verbose=1)
 callback = CallbackList([eval_callback, callback_max_episodes])
 
 # model = PPO(MlpPolicy, env, verbose=1, tensorboard_log="./runs/test")
-model = PPO.load("trained_models/ppo_alt2")
+model = PPO.load("trained_models/ppo_alt_5acc_10/ppo_agent_v0")
 model.set_env(env=env)
 
-model.learn(total_timesteps=100000000, tb_log_name="", callback=callback)
+# model.learn(total_timesteps=1, tb_log_name="", callback=callback)
 
-model.save("trained_models/ppo_alt3")
+# model.save("trained_models/ppo_alt3")
 
 
 print("DONE")

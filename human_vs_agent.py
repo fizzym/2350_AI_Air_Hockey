@@ -20,9 +20,9 @@ from end_to_end_utils import get_agent_class_and_config
 AGENT_TYPE = "ppo_agent"
 AGENT_VERSION = "v0"
 #Path to saved agent to load
-AGENT_PATH = "trained_models/ppo_offence.zip"
+AGENT_PATH = "trained_models/ppo_alt_5to3acc_4/ppo_agent_v0.zip"
 DISCRETE_ACTIONS = True
-ACCEL_MAG = 1.0 #Magnitude of acceleration of agent (if discrete)
+ACCEL_MAG = 3.0 #Magnitude of acceleration of agent (if discrete)
 AGENT_START_X = 0.4
 # Distance camera is above the table. Recommended to adjust so that table fills majority of screen
 # so that PID control is more intuitive
@@ -31,7 +31,7 @@ CAMERA_DIST = 1.5
 #The approximate dimensions of the displayed environment (playing surface is 2mx1m
 #but more of the table will be displayed based on camera height and screen dimensions)
 #Used to determine transformation from mouse position to table position 
-DISP_LENGTH = 2.0
+DISP_LENGTH = 2.5
 DISP_WIDTH = 1.25
 
 SCREEN_X, SCREEN_Y = pyautogui.size()
