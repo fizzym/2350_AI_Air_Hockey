@@ -1,0 +1,14 @@
+agent_info:
+  agent_name: ppo_agent
+  load_path: trained_models/ppo_alt_5acc_1/ppo_agent_v0
+  version: v0
+env_info:
+  env_name: single_mallet_alternating_v0
+test_info:
+  accel_mag: 5.0
+  render_mode: rgb_array
+  test_names:
+  - basic_defence_val_test_v0
+  - basic_offence_val_test_v0
+  - adv_defence_val_test_v0
+  - adv_offence_val_test_v0

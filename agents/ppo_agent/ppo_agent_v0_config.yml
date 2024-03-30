@@ -11,5 +11,5 @@ init_params:
 train_params:
   batch_size: 64 #Number of training episodes to simulate before updating network.
   max_rew: 10 #Training stops when mean reward = max_rew
-  max_batches: 5000 #Maximum number of batches to train for (overrides reward stop condition.)
+  max_batches: 10000 #Maximum number of batches to train for (overrides reward stop condition.)
 

@@ -2,15 +2,15 @@
 agent_info:
   agent_name: 'ppo_agent'
   version: "v0"
-  load_path: null #Path of previous agent save file, if starting from previously trained agent
+  load_path: "trained_models/ppo_alt_5to3acc_3/ppo_agent_v0" #Path of previous agent save file, if starting from previously trained agent
 
 env_info:
   env_name: 'single_mallet_alternating_v0'
 
 test_info:
   #Overrides individual render modes for validation tests. Set as 'None' to use mode in individual configs
-  render_mode: "human"
-  accel_mag: 1.0
+  render_mode: "rgb_array"
+  accel_mag: 3.0
   test_names: 
     - "basic_defence_val_test_v0"
     - "basic_offence_val_test_v0"
