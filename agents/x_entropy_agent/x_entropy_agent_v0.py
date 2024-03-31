@@ -18,14 +18,16 @@ EpisodeStep = namedtuple('EpisodeStep', field_names=['observation', 'action'])
 class Network(nn.Module):
     def __init__(self, obs_shape, act_shape, hidden_size =128):
         super().__init__()
-        self.input = nn.Linear(obs_shape, hidden_size)
-        self.output = nn.Linear(hidden_size, act_shape)
 
-    def forward(self, t):
-        t = F.relu(self.input(t))
-        t = F.softmax(self.output(t), dim=1)
+        self.net = nn.Sequential(
+            nn.Linear(obs_shape, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, act_shape),
+            nn.Softmax(dim=1)
+        )
 
-        return t
+    def forward(self, x):
+        return self.net(x)
 
 class X_Entropy_Agent(RL_Agent):
     """Implementation of the RL_Agent interface using cross-entropy learning.
